@@ -72,4 +72,5 @@ public class Player implements java.io.Serializable {
     public void setDepth(int depth) {
         this.depth = depth;
     }
+
 }

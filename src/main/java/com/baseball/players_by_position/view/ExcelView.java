@@ -1,7 +1,14 @@
-package com.baseball.players_by_position.excel;
+/*
+Code adapted from: https://github.com/aboullaite/SpringBoot-Excel-Csv/
+ */
+
+
+package com.baseball.players_by_position.view;
 
 import com.baseball.players_by_position.excel.formatter.IExcelFormatter;
+import com.baseball.players_by_position.excel.formatter.PositionExcelFormatter;
 import com.baseball.players_by_position.excel.mapper.IExcelRowMapper;
+import com.baseball.players_by_position.excel.mapper.PositionExcelRowMapper;
 import com.baseball.players_by_position.model.Player;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +17,8 @@ import org.springframework.web.servlet.view.document.AbstractXlsView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 public class ExcelView extends AbstractXlsView {
@@ -27,6 +34,11 @@ public class ExcelView extends AbstractXlsView {
         this.excelRowMapper = excelRowMapper;
     }
 
+    public ExcelView(){
+        this.excelFormatter = new PositionExcelFormatter();
+        this.excelRowMapper = new PositionExcelRowMapper();
+    }
+
     @Override
     protected void buildExcelDocument(Map<String, Object> model,
                                       Workbook workbook,
@@ -35,18 +47,17 @@ public class ExcelView extends AbstractXlsView {
 
         initWorkbookSettings(workbook);
 
-        // change the file name
-        response.setHeader("Content-Disposition", "attachment; filename=\"starters_by_position.xlsx\"");
+        response.setHeader("Content-Disposition", "attachment; filename=\"starters_by_position\"");
+        response.setHeader("Content-Type", "application/octet-stream");
 
-        this.excelFormatter.updateHeaderStyle(workbook.createFont());
+        excelFormatter.updateHeaderStyle(workbook.createFont());
 
-        @SuppressWarnings("unchecked")
-        Map<String, List<Player>> positionToPlayersMap = (Map<String, List<Player>>) model.get("positionsToStartingPlayersMap");
+        Map<String, Set<Player>> positionToPlayersMap = (Map<String, Set<Player>>) model.get("positionToStartingPlayersMap");
 
-        for(Map.Entry<String, List<Player>> entry : positionToPlayersMap.entrySet()){
+        for(Map.Entry<String, Set<Player>> entry : positionToPlayersMap.entrySet()){
 
             String position = entry.getKey();
-            List<Player> players = entry.getValue();
+            Set<Player> players = entry.getValue();
 
             Sheet sheet = workbook.createSheet(position);
             sheet.setDefaultColumnWidth(30);
@@ -59,11 +70,12 @@ public class ExcelView extends AbstractXlsView {
 
     private void initWorkbookSettings(Workbook workbook){
 
-        this.excelFormatter.updateHeaderStyle(workbook.createFont());
+        excelFormatter.setHeaderStyle(workbook.createCellStyle());
+        excelFormatter.updateHeaderStyle(workbook.createFont());
 
     }
 
-    private void writeSheetRows(Sheet sheet, List<Player> players){
+    private void writeSheetRows(Sheet sheet, Set<Player> players){
 
         // create header row
         Row header = sheet.createRow(0);

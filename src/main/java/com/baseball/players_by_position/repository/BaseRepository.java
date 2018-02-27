@@ -1,4 +1,4 @@
-package com.baseball.players_by_position.jpa.repository;
+package com.baseball.players_by_position.repository;
 
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.repository.Repository;

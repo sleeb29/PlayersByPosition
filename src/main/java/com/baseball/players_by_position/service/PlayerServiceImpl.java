@@ -1,10 +1,10 @@
-package com.baseball.players_by_position.jpa.service;
+package com.baseball.players_by_position.service;
 
-import com.baseball.players_by_position.jpa.repository.PlayerRepository;
 import com.baseball.players_by_position.model.Player;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.baseball.players_by_position.repository.PlayerRepository;
 
 import java.util.HashMap;
 import java.util.HashSet;
