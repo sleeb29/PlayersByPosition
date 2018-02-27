@@ -7,5 +7,5 @@ public interface PlayerService {
 
     void populate(List<Player> players);
 
-    HashMap<String, Set<Player>> getPositionToStartingPlayersMap(int startingDepthNum);
+    HashMap<String, Set<Player>> getPositionToStartingPlayersMap();
 }

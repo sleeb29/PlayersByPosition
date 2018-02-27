@@ -14,6 +14,8 @@ import java.util.Set;
 @Service
 public class PlayerServiceImpl implements PlayerService {
 
+    static int STARTING_DEPTH_POSITION_NUM = 1;
+
     public PlayerServiceImpl(){
 
     }
@@ -29,9 +31,9 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Transactional(readOnly=true)
-    public HashMap<String, Set<Player>> getPositionToStartingPlayersMap(int startingDepthNum){
+    public HashMap<String, Set<Player>> getPositionToStartingPlayersMap(){
 
-        Set<Player> players = playerRepository.getAllByDepth(startingDepthNum);
+        Set<Player> players = playerRepository.getAllByDepth(STARTING_DEPTH_POSITION_NUM);
         HashMap<String, Set<Player>> positionToStartingPlayersMap = new HashMap<>();
 
         for(Player player : players){

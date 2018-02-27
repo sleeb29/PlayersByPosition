@@ -89,7 +89,7 @@ public class PlayersByPositionApplication {
 
             //PlayerService playerService = appContext.getBean(PlayerServiceImpl.class);
             playerService.populate(leagueDepthChart.getPlayers());
-            HashMap<String, Set<Player>> positionToStartingPlayersMap = playerService.getPositionToStartingPlayersMap(1);
+            HashMap<String, Set<Player>> positionToStartingPlayersMap = playerService.getPositionToStartingPlayersMap();
 
             Boolean b = false;
 
