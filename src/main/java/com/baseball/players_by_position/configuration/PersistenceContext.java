@@ -1,7 +1,7 @@
 package com.baseball.players_by_position.configuration;
 
 import com.baseball.players_by_position.datastore.DataStore;
-import com.baseball.players_by_position.jpa.repository.PlayerRepository;
+import com.baseball.players_by_position.repository.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
