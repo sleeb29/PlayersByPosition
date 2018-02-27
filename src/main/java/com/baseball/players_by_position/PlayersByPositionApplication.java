@@ -46,27 +46,6 @@ public class PlayersByPositionApplication {
 
         SpringApplication.run(PlayersByPositionApplication.class);
 
-        //playerService.populate(leagueDepthChart.getPlayers());
-
-        //Map<String, Set<Player>> positionToPlayerMap = playerService.getPositionToStartingPlayersMap(1);
-
-		/*for (Map.Entry<String, List<Player>> entry : leagueDepthChart.getPositionToPlayersMap().entrySet()){
-
-			String position = entry.getKey();
-			List players = entry.getValue();
-
-			CsvMapper mapper = new CsvMapper();
-			CsvSchema schema = mapper.schemaFor(Player.class).withHeader();
-			schema.withColumnSeparator(',');
-
-			ObjectWriter objectWriter = mapper.writer(schema);
-			File tempFile = new File("outgoing/" + position + ".csv");
-			FileOutputStream tempFileOutputStream = new FileOutputStream(tempFile);
-			BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(tempFileOutputStream, 1024);
-			OutputStreamWriter writerOutputStream = new OutputStreamWriter(bufferedOutputStream, "UTF-8");
-			objectWriter.writeValue(writerOutputStream, players);
-
-		}*/
 	}
 
     @Bean
@@ -83,15 +62,8 @@ public class PlayersByPositionApplication {
             String responseBody = httpResponse.getBody().toString();
             LeagueDepthChart leagueDepthChart = new ObjectMapper().readValue(responseBody, LeagueDepthChart.class);
 
-
-            //PlayerService playerService = context.getBean(PlayerService.class);
-            //playerService.populate(leagueDepthChart.getPlayers());
-
-            //PlayerService playerService = appContext.getBean(PlayerServiceImpl.class);
             playerService.populate(leagueDepthChart.getPlayers());
             HashMap<String, Set<Player>> positionToStartingPlayersMap = playerService.getPositionToStartingPlayersMap();
-
-            Boolean b = false;
 
         };
     }
