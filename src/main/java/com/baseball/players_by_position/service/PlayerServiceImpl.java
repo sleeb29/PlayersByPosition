@@ -1,10 +1,10 @@
 package com.baseball.players_by_position.service;
 
 import com.baseball.players_by_position.model.Player;
+import com.baseball.players_by_position.repository.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.baseball.players_by_position.repository.PlayerRepository;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -15,10 +15,6 @@ import java.util.Set;
 public class PlayerServiceImpl implements PlayerService {
 
     static int STARTING_DEPTH_POSITION_NUM = 1;
-
-    public PlayerServiceImpl(){
-
-    }
 
     @Autowired
     private PlayerRepository playerRepository;

@@ -45,7 +45,7 @@ public class HttpService {
         String externalAPIKeyPropertyValue = System.getenv(externalAPIKeyPropertyName);
         String updatedURI = externalAPIURI;
 
-        if (externalAPIAuth == "API_KEY") {
+        if (externalAPIAuth.equals("API_KEY")) {
             updatedURI = externalAPIURI.replace(externalAPIKeyPropertyName, externalAPIKeyPropertyValue);
         }
 
