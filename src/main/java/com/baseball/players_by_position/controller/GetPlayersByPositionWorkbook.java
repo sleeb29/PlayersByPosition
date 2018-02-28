@@ -1,6 +1,7 @@
 package com.baseball.players_by_position.controller;
 
 import com.baseball.players_by_position.external.provider.HttpService;
+import com.baseball.players_by_position.external.provider.HttpServiceParams;
 import com.baseball.players_by_position.model.LeagueDepthChart;
 import com.baseball.players_by_position.model.Player;
 import com.baseball.players_by_position.service.PlayerService;
@@ -24,11 +25,14 @@ public class GetPlayersByPositionWorkbook {
     @Autowired
     PlayerService playerService;
 
+    @Autowired
+    HttpServiceParams httpServiceParams;
+
     @RequestMapping(value = "/getPlayersByPositionsWorkbook", method = RequestMethod.GET)
     public ModelAndView getPlayersByPositionsWorkbook(Model model) {
 
         HttpService httpService = new HttpService();
-        ResponseEntity httpResponse = httpService.getHTTPResponse();
+        ResponseEntity httpResponse = httpService.getHTTPResponse(httpServiceParams);
         String responseBody = httpResponse.getBody().toString();
 
         try {

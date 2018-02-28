@@ -1,7 +1,5 @@
 package com.baseball.players_by_position.external.provider;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -14,44 +12,32 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class HttpService {
 
-    @Value("${external_api.auth}")
-    private String externalAPIAuth;
-    @Value("${external_api.scheme}")
-    private String externalApiScheme;
-    @Value("${external_api.host}")
-    private String externalApiHost;
-    @Value("${external_api.resource}")
-    private String externalApiResource;
-    @Value("${external_api.content_type}")
-    private String externalApiContentType;
-    @Value("${external_api.content_type}")
-    private String externalAPI;
-    @Value("${external_api.api_key_property_name}")
-    private String externalAPIKeyPropertyName;
-    @Value("${external_api.uri}")
-    private String externalAPIURI;
-    @Value("${external_api.http_method}")
-    private String externalHttpMethod;
-
-    @Bean
-    public ResponseEntity getHTTPResponse() {
+    public ResponseEntity getHTTPResponse(HttpServiceParams httpServiceParams) {
 
         RestTemplate template = new RestTemplate();
 
-        MultiValueMap<String, Object> params = new LinkedMultiValueMap<String, Object>();
+        MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
         HttpHeaders headers = new HttpHeaders();
         HttpEntity<Object> request = new HttpEntity<>(params, headers);
-        HttpMethod httpMethod = HttpMethod.valueOf(externalHttpMethod);
-        String externalAPIKeyPropertyValue = System.getenv(externalAPIKeyPropertyName);
-        String updatedURI = externalAPIURI;
+        HttpMethod httpMethod = HttpMethod.valueOf(httpServiceParams.getExternalHttpMethod());
+        String externalAPIKeyPropertyValue = System.getenv(httpServiceParams.getExternalApiKeyPropertyName());
+        String updatedUri = httpServiceParams.getExternalApiUri();
 
-        if (externalAPIAuth.equals("API_KEY")) {
-            updatedURI = externalAPIURI.replace(externalAPIKeyPropertyName, externalAPIKeyPropertyValue);
+        if (httpServiceParams.getExternalApiAuthChoice().equals(AuthChoice.API_KEY_AUTHORIZATION)) {
+            updatedUri = httpServiceParams.getExternalAPI().replace(httpServiceParams.getExternalApiKeyPropertyName(), externalAPIKeyPropertyValue);
         }
 
-        ResponseEntity<String> httpResponse = template.exchange(updatedURI, httpMethod, request, String.class, params);
-
+        ResponseEntity<String> httpResponse = template.exchange(updatedUri, httpMethod, request, String.class, params);
         return httpResponse;
+
+    }
+
+    enum AuthChoice {
+        API_KEY_AUTHORIZATION {
+            public String toString() {
+                return "API_KEY_AUTHORIZATION";
+            }
+        }
 
     }
 
