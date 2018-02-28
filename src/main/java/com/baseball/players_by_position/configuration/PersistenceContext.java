@@ -5,7 +5,6 @@ import com.baseball.players_by_position.repository.PlayerRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.orm.hibernate5.SpringSessionContext;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -20,18 +19,14 @@ import java.util.Properties;
 public class PersistenceContext {
 
     @Bean
-    EmbeddedDatabase dataSource() throws IOException {
-        String dbTypeAsString = "H2";
-        EmbeddedDatabaseType dbType = EmbeddedDatabaseType.valueOf(dbTypeAsString);
-        String schemaLocation = "datastore/create-temp-position-table.sql";
+    EmbeddedDatabase dataSource() {
 
-        DataStore dataStore = new DataStore(dbType, schemaLocation);
-
+        DataStore dataStore = new DataStore();
         return dataStore.getDataStore();
     }
 
     @Bean
-    LocalContainerEntityManagerFactoryBean entityManagerFactory() throws IOException {
+    LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
         entityManagerFactoryBean.setDataSource(dataSource());
         entityManagerFactoryBean.setPackagesToScan(PlayerRepository.class.getPackage().getName());
