@@ -23,8 +23,8 @@ public class HttpService {
         String externalAPIKeyPropertyValue = System.getenv(httpServiceParams.getExternalApiKeyPropertyName());
         String updatedUri = httpServiceParams.getExternalApiUri();
 
-        if (httpServiceParams.getExternalApiAuthChoice().equals(AuthChoice.API_KEY_AUTHORIZATION)) {
-            updatedUri = httpServiceParams.getExternalAPI().replace(httpServiceParams.getExternalApiKeyPropertyName(), externalAPIKeyPropertyValue);
+        if (httpServiceParams.getExternalApiAuthChoice().equals(AuthChoice.API_KEY_AUTHORIZATION.toString())) {
+            updatedUri = httpServiceParams.getExternalApiUri().replace(httpServiceParams.getExternalApiKeyPropertyName(), externalAPIKeyPropertyValue);
         }
 
         ResponseEntity<String> httpResponse = template.exchange(updatedUri, httpMethod, request, String.class, params);

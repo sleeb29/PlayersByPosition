@@ -1,6 +1,6 @@
-package com.baseball.players_by_position.repository;
+package com.baseball.players_by_position.model.repository;
 
-import com.baseball.players_by_position.model.Player;
+import com.baseball.players_by_position.model.model.Player;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -12,6 +12,6 @@ import java.util.Set;
 public interface PlayerRepository extends CrudRepository<Player, Long> {
 
     @Query("select p from Player p where p.depth = :depth")
-    public Set<Player> getAllByDepth(@Param("depth") int depth);
+    Set<Player> getAllByDepth(@Param("depth") int depth);
 
 }

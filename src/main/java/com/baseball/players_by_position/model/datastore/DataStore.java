@@ -1,4 +1,4 @@
-package com.baseball.players_by_position.datastore;
+package com.baseball.players_by_position.model.datastore;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
@@ -28,10 +28,6 @@ public class DataStore {
 
     public EmbeddedDatabase getDataStore() {
         return dataStore;
-    }
-
-    public void setDataStore(EmbeddedDatabase dataStore) {
-        this.dataStore = dataStore;
     }
 
 }

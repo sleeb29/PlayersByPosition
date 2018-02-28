@@ -1,7 +1,7 @@
-package com.baseball.players_by_position.configuration;
+package com.baseball.players_by_position.configuration.persistence;
 
-import com.baseball.players_by_position.datastore.DataStore;
-import com.baseball.players_by_position.repository.PlayerRepository;
+import com.baseball.players_by_position.model.datastore.DataStore;
+import com.baseball.players_by_position.model.repository.PlayerRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
@@ -12,7 +12,6 @@ import org.springframework.orm.jpa.vendor.Database;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import java.io.IOException;
 import java.util.Properties;
 
 @Configuration
@@ -41,7 +40,7 @@ public class PersistenceContext {
     }
 
     @Bean
-    PlatformTransactionManager transactionManager() throws IOException {
+    PlatformTransactionManager transactionManager() {
         JpaTransactionManager transactionManager = new JpaTransactionManager();
         transactionManager.setEntityManagerFactory(entityManagerFactory().getObject());
         return transactionManager;

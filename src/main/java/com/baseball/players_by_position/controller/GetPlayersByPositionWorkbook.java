@@ -2,10 +2,11 @@ package com.baseball.players_by_position.controller;
 
 import com.baseball.players_by_position.external.provider.HttpService;
 import com.baseball.players_by_position.external.provider.HttpServiceParams;
-import com.baseball.players_by_position.model.LeagueDepthChart;
-import com.baseball.players_by_position.model.Player;
+import com.baseball.players_by_position.model.model.LeagueDepthChart;
+import com.baseball.players_by_position.model.model.Player;
 import com.baseball.players_by_position.service.PlayerService;
 import com.baseball.players_by_position.view.ExcelView;
+import com.baseball.players_by_position.view.mapper.IExcelRowMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,9 @@ public class GetPlayersByPositionWorkbook {
     @Autowired
     HttpServiceParams httpServiceParams;
 
+    @Autowired
+    IExcelRowMapper excelRowMapper;
+
     @RequestMapping(value = "/getPlayersByPositionsWorkbook", method = RequestMethod.GET)
     public ModelAndView getPlayersByPositionsWorkbook(Model model) {
 
@@ -42,7 +46,7 @@ public class GetPlayersByPositionWorkbook {
             playerService.populate(leagueDepthChart.getPlayers());
             Map<String, Set<Player>> positionToStartingPlayersMap = playerService.getPositionToStartingPlayersMap();
 
-            return new ModelAndView(new ExcelView(), "positionToStartingPlayersMap", positionToStartingPlayersMap);
+            return new ModelAndView(new ExcelView(excelRowMapper), "positionToStartingPlayersMap", positionToStartingPlayersMap);
 
         } catch(IOException exception){
             return null;

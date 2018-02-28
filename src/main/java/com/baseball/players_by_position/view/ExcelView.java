@@ -5,27 +5,23 @@ Code adapted from: https://github.com/aboullaite/SpringBoot-Excel-Csv/
 
 package com.baseball.players_by_position.view;
 
-import com.baseball.players_by_position.excel.mapper.IExcelRowMapper;
-import com.baseball.players_by_position.model.Player;
+import com.baseball.players_by_position.model.model.Player;
+import com.baseball.players_by_position.view.mapper.IExcelRowMapper;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.view.document.AbstractXlsView;
 
-import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 import java.util.Set;
 
-@Service
 public class ExcelView extends AbstractXlsView {
 
     private IExcelRowMapper excelRowMapper;
 
-    @Inject
-    void setExcelRowMapper(IExcelRowMapper<Player> excelRowMapper) {
+    public ExcelView(IExcelRowMapper excelRowMapper) {
         this.excelRowMapper = excelRowMapper;
     }
 
@@ -56,7 +52,6 @@ public class ExcelView extends AbstractXlsView {
 
     private void writeSheetRows(Sheet sheet, Set<Player> players){
 
-        // create header row
         Row header = sheet.createRow(0);
         excelRowMapper.mapHeaderRow(header);
 

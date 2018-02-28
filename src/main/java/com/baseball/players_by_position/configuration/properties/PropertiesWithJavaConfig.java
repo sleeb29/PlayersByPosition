@@ -1,4 +1,4 @@
-package com.baseball.players_by_position.properties;
+package com.baseball.players_by_position.configuration.properties;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,4 +1,4 @@
-package com.baseball.players_by_position.model;
+package com.baseball.players_by_position.model.model;
 
 import javax.persistence.*;
 

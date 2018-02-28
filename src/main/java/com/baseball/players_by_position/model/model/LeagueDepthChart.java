@@ -1,6 +1,6 @@
-package com.baseball.players_by_position.model;
+package com.baseball.players_by_position.model.model;
 
-import com.baseball.players_by_position.deserialize.DepthChartDeserializer;
+import com.baseball.players_by_position.model.deserialize.DepthChartDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import java.util.List;

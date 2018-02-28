@@ -1,6 +1,6 @@
-package com.baseball.players_by_position.excel.mapper;
+package com.baseball.players_by_position.view.mapper;
 
-import com.baseball.players_by_position.model.Player;
+import com.baseball.players_by_position.model.model.Player;
 import org.apache.poi.ss.usermodel.Row;
 import org.springframework.stereotype.Service;
 

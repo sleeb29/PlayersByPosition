@@ -1,19 +1,21 @@
-package com.baseball.players_by_position.deserialize;
+package com.baseball.players_by_position.model.deserialize;
 
-import com.baseball.players_by_position.model.LeagueDepthChart;
+import com.baseball.players_by_position.model.model.LeagueDepthChart;
+import com.baseball.players_by_position.model.model.Player;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.TreeNode;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.baseball.players_by_position.model.Player;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class DepthChartDeserializer extends StdDeserializer<LeagueDepthChart> {
 
-    public DepthChartDeserializer(){
+    public DepthChartDeserializer() {
         this(null);
     }
 
