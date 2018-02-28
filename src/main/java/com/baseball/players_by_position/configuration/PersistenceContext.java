@@ -2,10 +2,8 @@ package com.baseball.players_by_position.configuration;
 
 import com.baseball.players_by_position.datastore.DataStore;
 import com.baseball.players_by_position.repository.PlayerRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.orm.hibernate5.SpringSessionContext;
@@ -21,24 +19,11 @@ import java.util.Properties;
 @Configuration
 public class PersistenceContext {
 
-    @Autowired
-    private Environment env;
-
     @Bean
     EmbeddedDatabase dataSource() throws IOException {
-
-        /*String rootPath = Thread.currentThread().getContextClassLoader().getResource("").getPath();
-        String appConfigPath = rootPath + "app.properties";
-
-        String currentDir = System.getProperty("user.dir");
-        System.out.println("Current dir using System:" +currentDir);
-
-        Properties appProps = new Properties();
-        appProps.load(new FileInputStream("/resources/app.properties"));*/
-
-        String dbTypeAsString = "H2";//appProps.getProperty("dbType");
+        String dbTypeAsString = "H2";
         EmbeddedDatabaseType dbType = EmbeddedDatabaseType.valueOf(dbTypeAsString);
-        String schemaLocation = "datastore/create-temp-position-table.sql";//appProps.getProperty("createSchemaLocation");
+        String schemaLocation = "datastore/create-temp-position-table.sql";
 
         DataStore dataStore = new DataStore(dbType, schemaLocation);
 
