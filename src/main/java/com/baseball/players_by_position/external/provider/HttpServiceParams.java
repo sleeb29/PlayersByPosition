@@ -16,8 +16,6 @@ public class HttpServiceParams {
     private String externalApiResource;
     @Value("${external_api.content_type}")
     private String externalApiContentType;
-    @Value("${external_api.content_type}")
-    private String externalAPI;
     @Value("${external_api.api_key_property_name}")
     private String externalApiKeyPropertyName;
     @Value("${external_api.uri}")
@@ -43,10 +41,6 @@ public class HttpServiceParams {
 
     public String getExternalApiContentType() {
         return externalApiContentType;
-    }
-
-    public String getExternalAPI() {
-        return externalAPI;
     }
 
     public String getExternalApiKeyPropertyName() {

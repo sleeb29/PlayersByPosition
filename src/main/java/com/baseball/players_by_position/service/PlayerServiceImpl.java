@@ -11,7 +11,8 @@ import java.util.*;
 @Service
 public class PlayerServiceImpl implements PlayerService {
 
-    static int STARTING_DEPTH_POSITION_NUM = 1;
+    final static int STARTING_DEPTH_POSITION_NUM = 1;
+    final static String OUTFIELD = "OF";
 
     @Autowired
     private PlayerRepository playerRepository;
@@ -22,8 +23,6 @@ public class PlayerServiceImpl implements PlayerService {
         playerRepository.save(players);
 
     }
-
-    final static String OUTFIELD = "OF";
 
     @Transactional(readOnly=true)
     public HashMap<String, Set<Player>> getPositionToStartingPlayersMap(){
