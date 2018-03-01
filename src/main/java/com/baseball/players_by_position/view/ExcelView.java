@@ -5,7 +5,7 @@ Code adapted from: https://github.com/aboullaite/SpringBoot-Excel-Csv/
 
 package com.baseball.players_by_position.view;
 
-import com.baseball.players_by_position.model.model.Player;
+import com.baseball.players_by_position.model.Player;
 import com.baseball.players_by_position.view.mapper.IExcelRowMapper;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;

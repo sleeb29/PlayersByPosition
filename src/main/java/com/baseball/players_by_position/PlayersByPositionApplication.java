@@ -9,16 +9,16 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import javax.persistence.PersistenceContext;
 
 @SpringBootApplication
-@ComponentScan({"com.baseball.players_by_position.model.model",
-		"com.baseball.players_by_position.model.datastore",
+@ComponentScan({"com.baseball.players_by_position.model",
+		"com.baseball.players_by_position.service.datastore",
 		"com.baseball.players_by_position.service",
-		"com.baseball.players_by_position.model.repository",
+		"com.baseball.players_by_position.service.repository",
                "com.baseball.players_by_position.controller",
                "com.baseball.players_by_position.view",
 		"com.baseball.players_by_position.view.mapper",
 		"com.baseball.players_by_position.configuration.properties",
 		"com.baseball.players_by_position.external.provider"})
-@EnableJpaRepositories("com.baseball.players_by_position.model.repository")
+@EnableJpaRepositories("com.baseball.players_by_position.service.repository")
 @PersistenceContext
 @EnableCaching
 public class PlayersByPositionApplication {

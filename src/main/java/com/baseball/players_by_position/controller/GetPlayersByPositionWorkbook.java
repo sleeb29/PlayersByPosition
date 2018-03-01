@@ -2,8 +2,8 @@ package com.baseball.players_by_position.controller;
 
 import com.baseball.players_by_position.external.provider.HttpService;
 import com.baseball.players_by_position.external.provider.HttpServiceParams;
-import com.baseball.players_by_position.model.model.LeagueDepthChart;
-import com.baseball.players_by_position.model.model.Player;
+import com.baseball.players_by_position.model.LeagueDepthChart;
+import com.baseball.players_by_position.model.Player;
 import com.baseball.players_by_position.service.PlayerService;
 import com.baseball.players_by_position.view.ExcelView;
 import com.baseball.players_by_position.view.mapper.IExcelRowMapper;
