@@ -32,10 +32,12 @@ public class GetPlayersByPositionWorkbook {
     @Autowired
     IExcelRowMapper excelRowMapper;
 
+    @Autowired
+    HttpService httpService;
+
     @RequestMapping(value = "/getPlayersByPositionsWorkbook", method = RequestMethod.GET)
     public ModelAndView getPlayersByPositionsWorkbook(Model model) {
 
-        HttpService httpService = new HttpService();
         ResponseEntity httpResponse = httpService.getHTTPResponse(httpServiceParams);
         String responseBody = httpResponse.getBody().toString();
 
