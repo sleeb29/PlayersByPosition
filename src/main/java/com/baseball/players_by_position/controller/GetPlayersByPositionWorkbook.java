@@ -1,7 +1,7 @@
 package com.baseball.players_by_position.controller;
 
 import com.baseball.players_by_position.external.provider.HttpService;
-import com.baseball.players_by_position.external.provider.HttpServiceParams;
+import com.baseball.players_by_position.external.provider.HttpServicesParams;
 import com.baseball.players_by_position.model.LeagueDepthChart;
 import com.baseball.players_by_position.model.Player;
 import com.baseball.players_by_position.service.PlayerService;
@@ -28,7 +28,7 @@ public class GetPlayersByPositionWorkbook {
     PlayerService playerService;
 
     @Autowired
-    HttpServiceParams httpServiceParams;
+    HttpServicesParams httpServicesParams;
 
     @Autowired
     IExcelRowMapper excelRowMapper;
@@ -40,12 +40,15 @@ public class GetPlayersByPositionWorkbook {
     @Cacheable("positionToStartingPlayersWorkbook")
     public ModelAndView getPlayersByPositionsWorkbook(Model model) {
 
-        ResponseEntity httpResponse = httpService.getHTTPResponse(httpServiceParams);
-        String responseBody = httpResponse.getBody().toString();
+        ResponseEntity depthChartResponse = httpService.getHTTPResponse(httpServicesParams.getDepthChartServiceParams());
+        String depthChartBody = depthChartResponse.getBody().toString();
+
+        ResponseEntity playerRankingResponse = httpService.getHTTPResponse(httpServicesParams.getPlayerRankingServiceParams());
+        String playerRankingBody = playerRankingResponse.getBody().toString();
 
         try {
 
-            LeagueDepthChart leagueDepthChart = new ObjectMapper().readValue(responseBody, LeagueDepthChart.class);
+            LeagueDepthChart leagueDepthChart = new ObjectMapper().readValue(depthChartBody, LeagueDepthChart.class);
 
             playerService.populate(leagueDepthChart.getPlayers());
             Map<String, Set<Player>> positionToStartingPlayersMap = playerService.getPositionToStartingPlayersMap();

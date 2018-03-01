@@ -12,7 +12,7 @@ import org.springframework.web.client.RestTemplate;
 @Service
 public class HttpService {
 
-    public ResponseEntity getHTTPResponse(HttpServiceParams httpServiceParams) {
+    public ResponseEntity getHTTPResponse(IHttpServiceParams httpServiceParams) {
 
         RestTemplate template = new RestTemplate();
 
@@ -20,10 +20,10 @@ public class HttpService {
         HttpHeaders headers = new HttpHeaders();
         HttpEntity<Object> request = new HttpEntity<>(params, headers);
         HttpMethod httpMethod = HttpMethod.valueOf(httpServiceParams.getExternalHttpMethod());
-        String externalAPIKeyPropertyValue = System.getenv(httpServiceParams.getExternalApiKeyPropertyName());
         String updatedUri = httpServiceParams.getExternalApiUri();
 
         if (httpServiceParams.getExternalApiAuthChoice().equals(AuthChoice.API_KEY_AUTHORIZATION.toString())) {
+            String externalAPIKeyPropertyValue = System.getenv(httpServiceParams.getExternalApiKeyPropertyName());
             updatedUri = httpServiceParams.getExternalApiUri().replace(httpServiceParams.getExternalApiKeyPropertyName(), externalAPIKeyPropertyValue);
         }
 
