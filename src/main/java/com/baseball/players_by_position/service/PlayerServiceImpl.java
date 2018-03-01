@@ -3,7 +3,6 @@ package com.baseball.players_by_position.service;
 import com.baseball.players_by_position.model.model.Player;
 import com.baseball.players_by_position.model.repository.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +25,6 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Transactional(readOnly=true)
-    @Cacheable("positionToStartingPlayersMap")
     public HashMap<String, Set<Player>> getPositionToStartingPlayersMap(){
 
         EnumMap<POSITIONS_TO_AGGREGATE, String> positionsToAggregateMap = new EnumMap<>(POSITIONS_TO_AGGREGATE.class);
