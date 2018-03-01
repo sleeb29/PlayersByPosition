@@ -1,6 +1,6 @@
 package com.baseball.players_by_position.service;
 
-import com.baseball.players_by_position.model.model.Player;
+import com.baseball.players_by_position.model.Player;
 import com.baseball.players_by_position.model.repository.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

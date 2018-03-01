@@ -1,6 +1,6 @@
 package com.baseball.players_by_position.model.repository;
 
-import com.baseball.players_by_position.model.model.Player;
+import com.baseball.players_by_position.model.Player;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
