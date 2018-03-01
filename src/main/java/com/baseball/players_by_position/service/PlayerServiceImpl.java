@@ -6,10 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class PlayerServiceImpl implements PlayerService {
@@ -26,8 +23,15 @@ public class PlayerServiceImpl implements PlayerService {
 
     }
 
+    final static String OUTFIELD = "OF";
+
     @Transactional(readOnly=true)
     public HashMap<String, Set<Player>> getPositionToStartingPlayersMap(){
+
+        EnumMap<POSITIONS_TO_AGGREGATE, String> positionsToAggregateMap = new EnumMap<>(POSITIONS_TO_AGGREGATE.class);
+        positionsToAggregateMap.put(POSITIONS_TO_AGGREGATE.CF, OUTFIELD);
+        positionsToAggregateMap.put(POSITIONS_TO_AGGREGATE.LF, OUTFIELD);
+        positionsToAggregateMap.put(POSITIONS_TO_AGGREGATE.RF, OUTFIELD);
 
         Set<Player> players = playerRepository.getAllByDepth(STARTING_DEPTH_POSITION_NUM);
         HashMap<String, Set<Player>> positionToStartingPlayersMap = new HashMap<>();
@@ -35,6 +39,10 @@ public class PlayerServiceImpl implements PlayerService {
         for(Player player : players){
 
             String position = player.getPosition();
+
+            if (positionsToAggregateMap.containsKey(position)) {
+                position = positionsToAggregateMap.get(position);
+            }
 
             if(!positionToStartingPlayersMap.containsKey(position)){
                 positionToStartingPlayersMap.put(position, new HashSet<>());
@@ -48,6 +56,12 @@ public class PlayerServiceImpl implements PlayerService {
 
         return positionToStartingPlayersMap;
 
+    }
+
+    enum POSITIONS_TO_AGGREGATE {
+        LF,
+        RF,
+        CF
     }
 
 }
