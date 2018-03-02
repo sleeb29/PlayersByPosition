@@ -153,6 +153,11 @@
             <artifactId>spring-boot-autoconfigure</artifactId>
             <version>1.5.10.RELEASE</version>
         </dependency>
+		<dependency>
+			<groupId>org.cryptacular</groupId>
+			<artifactId>cryptacular</artifactId>
+			<version>1.0</version>
+		</dependency>
 
     </dependencies>
 

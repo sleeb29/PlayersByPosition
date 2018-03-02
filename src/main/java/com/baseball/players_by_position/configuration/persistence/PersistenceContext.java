@@ -1,7 +1,7 @@
 package com.baseball.players_by_position.configuration.persistence;
 
-import com.baseball.players_by_position.model.repository.PlayerRepository;
 import com.baseball.players_by_position.service.datastore.DataStore;
+import com.baseball.players_by_position.service.repository.PlayerRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;

@@ -18,6 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.io.IOException;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.util.Map;
 import java.util.Set;
 
@@ -38,7 +43,7 @@ public class GetPlayersByPositionWorkbook {
 
     @RequestMapping(value = "/getPlayersByPositionsWorkbook", method = RequestMethod.GET)
     @Cacheable("positionToStartingPlayersWorkbook")
-    public ModelAndView getPlayersByPositionsWorkbook(Model model) {
+    public ModelAndView getPlayersByPositionsWorkbook(Model model) throws CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException {
 
         ResponseEntity depthChartResponse = httpService.getHTTPResponse(httpServicesParams.getDepthChartServiceParams());
         String depthChartBody = depthChartResponse.getBody().toString();
