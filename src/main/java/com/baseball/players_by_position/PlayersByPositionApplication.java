@@ -25,7 +25,7 @@ public class PlayersByPositionApplication {
 
 	public static void main(String[] args) {
 
-        SpringApplication.run(PlayersByPositionApplication.class);
+		SpringApplication.run(PlayersByPositionApplication.class);
 
 	}
 

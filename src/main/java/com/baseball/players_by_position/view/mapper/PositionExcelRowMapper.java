@@ -9,12 +9,14 @@ public class PositionExcelRowMapper implements IExcelRowMapper<Player> {
 
     static final String FIRST_NAME = "Player Name";
     static final String TEAM = "Team";
+    static final String STATUS = "Status";
 
 
     public void mapHeaderRow(Row row){
 
         row.createCell(0).setCellValue(FIRST_NAME);
         row.createCell(1).setCellValue(TEAM);
+        row.createCell(2).setCellValue(STATUS);
 
     }
 
@@ -22,6 +24,7 @@ public class PositionExcelRowMapper implements IExcelRowMapper<Player> {
 
         row.createCell(0).setCellValue(player.getFirstName() + " " + player.getLastName());
         row.createCell(1).setCellValue(player.getTeam());
+        row.createCell(2).setCellValue(player.getStatus());
 
     }
 
