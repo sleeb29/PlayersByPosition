@@ -41,7 +41,7 @@ public class GetPlayersByPositionWorkbook {
     @Autowired
     HttpService httpService;
 
-    @RequestMapping(value = "/getPlayersByPositionsWorkbook", method = RequestMethod.GET)
+    @RequestMapping(value = "/getStartersByPositionWorkbook", method = RequestMethod.GET)
     @Cacheable("positionToStartingPlayersWorkbook")
     public ModelAndView getPlayersByPositionsWorkbook(Model model) throws CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException {
 
