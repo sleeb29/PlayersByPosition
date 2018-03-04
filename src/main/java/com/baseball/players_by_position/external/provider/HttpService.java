@@ -22,9 +22,12 @@ import java.io.IOException;
 import java.security.*;
 import java.security.cert.CertificateException;
 import java.util.concurrent.Future;
+import java.util.logging.Logger;
 
 @Service
 public class HttpService {
+
+    private static final Logger logger = Logger.getLogger(HttpService.class.getName());
 
     @Value("${client.key_store_location}")
     private String clientKeyStoreLocation;
@@ -33,6 +36,8 @@ public class HttpService {
 
     @Async
     public Future<ResponseEntity> getHTTPResponse(IHttpServiceParams httpServiceParams) throws CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException {
+
+        logger.info("in getHTTPResponse for service: " + httpServiceParams.getExternalApiHost());
 
         HttpComponentsClientHttpRequestFactory httpComponentsClientHttpRequestFactory = new HttpComponentsClientHttpRequestFactory(createHttpClient());
         RestTemplate restTemplate = new RestTemplate(httpComponentsClientHttpRequestFactory);
