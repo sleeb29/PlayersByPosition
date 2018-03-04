@@ -9,6 +9,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -19,6 +21,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.*;
 import java.security.cert.CertificateException;
+import java.util.concurrent.Future;
 
 @Service
 public class HttpService {
@@ -28,7 +31,8 @@ public class HttpService {
     @Value("${client.key_store_password_env_variable_name}")
     private String clientKeyStorePasswordEnvVariableName;
 
-    public ResponseEntity getHTTPResponse(IHttpServiceParams httpServiceParams) throws CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException {
+    @Async
+    public Future<ResponseEntity> getHTTPResponse(IHttpServiceParams httpServiceParams) throws CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException {
 
         HttpComponentsClientHttpRequestFactory httpComponentsClientHttpRequestFactory = new HttpComponentsClientHttpRequestFactory(createHttpClient());
         RestTemplate restTemplate = new RestTemplate(httpComponentsClientHttpRequestFactory);
@@ -45,7 +49,7 @@ public class HttpService {
         }
 
         ResponseEntity<String> httpResponse = restTemplate.exchange(updatedUri, httpMethod, request, String.class, params);
-        return httpResponse;
+        return new AsyncResult<>(httpResponse);
 
     }
 

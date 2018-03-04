@@ -5,6 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 import javax.persistence.PersistenceContext;
 
@@ -18,6 +19,7 @@ import javax.persistence.PersistenceContext;
 		"com.baseball.players_by_position.configuration.properties",
 		"com.baseball.players_by_position.external.provider"})
 @EnableJpaRepositories("com.baseball.players_by_position.service.repository")
+@EnableAsync
 @PersistenceContext
 @EnableCaching
 public class PlayersByPositionApplication {
