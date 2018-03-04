@@ -16,6 +16,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 
 public class ExcelView extends AbstractXlsView {
 
@@ -34,9 +35,9 @@ public class ExcelView extends AbstractXlsView {
         response.setHeader("Content-Disposition", "attachment; filename=\"starters_by_position\"");
         response.setHeader("Content-Type", "application/octet-stream");
 
-        Map<String, Set<Player>> positionToPlayersMap = (Map<String, Set<Player>>) model.get("positionToStartingPlayersMap");
+        Map<String, SortedSet<Player>> positionToPlayersMap = (Map<String, SortedSet<Player>>) model.get("positionToStartingPlayersMap");
 
-        for(Map.Entry<String, Set<Player>> entry : positionToPlayersMap.entrySet()){
+        for (Map.Entry<String, SortedSet<Player>> entry : positionToPlayersMap.entrySet()) {
 
             String position = entry.getKey();
             Set<Player> players = entry.getValue();

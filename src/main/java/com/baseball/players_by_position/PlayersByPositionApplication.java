@@ -10,8 +10,7 @@ import javax.persistence.PersistenceContext;
 
 @SpringBootApplication
 @ComponentScan({"com.baseball.players_by_position.model",
-		"com.baseball.players_by_position.service.datastore",
-		"com.baseball.players_by_position.service",
+		"com.baseball.players_by_position.service.service",
 		"com.baseball.players_by_position.service.repository",
                "com.baseball.players_by_position.controller",
                "com.baseball.players_by_position.view",

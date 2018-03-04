@@ -4,7 +4,8 @@ import com.baseball.players_by_position.external.provider.HttpService;
 import com.baseball.players_by_position.external.provider.HttpServicesParams;
 import com.baseball.players_by_position.model.LeagueDepthChart;
 import com.baseball.players_by_position.model.Player;
-import com.baseball.players_by_position.service.PlayerService;
+import com.baseball.players_by_position.model.PlayerRankList;
+import com.baseball.players_by_position.service.service.PlayerService;
 import com.baseball.players_by_position.view.ExcelView;
 import com.baseball.players_by_position.view.mapper.IExcelRowMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,14 +18,21 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
 import java.io.IOException;
+import java.io.StringReader;
 import java.security.KeyManagementException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.CertificateException;
 import java.util.Map;
-import java.util.Set;
+import java.util.SortedSet;
 
 @RestController
 public class GetPlayersByPositionWorkbook {
@@ -40,29 +48,31 @@ public class GetPlayersByPositionWorkbook {
 
     @Autowired
     HttpService httpService;
-
+    
     @RequestMapping(value = "/getStartersByPositionWorkbook", method = RequestMethod.GET)
     @Cacheable("positionToStartingPlayersWorkbook")
-    public ModelAndView getPlayersByPositionsWorkbook(Model model) throws CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException {
+    public ModelAndView getStartersByPositionWorkbook(Model model) throws CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException, JAXBException, XMLStreamException {
 
         ResponseEntity depthChartResponse = httpService.getHTTPResponse(httpServicesParams.getDepthChartServiceParams());
         String depthChartBody = depthChartResponse.getBody().toString();
 
+        LeagueDepthChart leagueDepthChart = new ObjectMapper().readValue(depthChartBody, LeagueDepthChart.class);
+
         ResponseEntity playerRankingResponse = httpService.getHTTPResponse(httpServicesParams.getPlayerRankingServiceParams());
         String playerRankingBody = playerRankingResponse.getBody().toString();
 
-        try {
+        XMLInputFactory xmlInputFactory = XMLInputFactory.newInstance();
+        XMLStreamReader xmlStreamReader = xmlInputFactory.createXMLStreamReader(new StringReader(playerRankingBody));
 
-            LeagueDepthChart leagueDepthChart = new ObjectMapper().readValue(depthChartBody, LeagueDepthChart.class);
+        JAXBContext jaxbContext = JAXBContext.newInstance(PlayerRankList.class);
+        Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+        PlayerRankList playerRankList = (PlayerRankList) jaxbUnmarshaller.unmarshal(xmlStreamReader);
 
-            playerService.populate(leagueDepthChart.getPlayers());
-            Map<String, Set<Player>> positionToStartingPlayersMap = playerService.getPositionToStartingPlayersMap();
+        playerService.populate(leagueDepthChart.getPlayers(), playerRankList.getPlayerRankings());
 
-            return new ModelAndView(new ExcelView(excelRowMapper), "positionToStartingPlayersMap", positionToStartingPlayersMap);
+        Map<String, SortedSet<Player>> positionToStartingPlayersMap = playerService.getPositionToStartingPlayersMap();
 
-        } catch(IOException exception){
-            return null;
-        }
+        return new ModelAndView(new ExcelView(excelRowMapper), "positionToStartingPlayersMap", positionToStartingPlayersMap);
 
     }
 
