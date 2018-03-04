@@ -11,7 +11,7 @@ import java.util.Set;
 @Repository
 public interface PlayerRepository extends CrudRepository<Player, Long> {
 
-    @Query("select p from Player p where p.depth = :depth")
+    @Query(name = "player_repository.get_all_by_depth")
     Set<Player> getAllByDepth(@Param("depth") int depth);
 
 }
