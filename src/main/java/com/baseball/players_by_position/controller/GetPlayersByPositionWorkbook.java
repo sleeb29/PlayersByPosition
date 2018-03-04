@@ -31,25 +31,38 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.logging.Logger;
 
 @RestController
 public class GetPlayersByPositionWorkbook {
 
+    private static final Logger logger = Logger.getLogger(GetPlayersByPositionWorkbook.class.getName());
+
     @Autowired
     PlayerService playerService;
-
     @Autowired
     HttpServicesParams httpServicesParams;
-
     @Autowired
     IExcelRowMapper excelRowMapper;
-
     @Autowired
     HttpService httpService;
+
+    @RequestMapping(value = "/index", method = RequestMethod.GET)
+    public ModelAndView getIndex() {
+
+        logger.info("Serving index page.");
+
+        ModelAndView model = new ModelAndView();
+        model.setViewName("index");
+        return model;
+
+    }
 
     @RequestMapping(value = "/getStartersByPositionWorkbook", method = RequestMethod.GET)
     @Cacheable("positionToStartingPlayersWorkbook")
     public ModelAndView getStartersByPositionWorkbook(Model model) throws CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException, JAXBException, XMLStreamException, ExecutionException, InterruptedException {
+
+        logger.info("in getStartersByPositionWorkbook.");
 
         Future<ResponseEntity> depthChartResponseFuture = httpService.getHTTPResponse(httpServicesParams.getDepthChartServiceParams());
         Future<ResponseEntity> playerRankingResponseFuture = httpService.getHTTPResponse(httpServicesParams.getPlayerRankingServiceParams());
@@ -74,6 +87,8 @@ public class GetPlayersByPositionWorkbook {
 
             if (!depthChartResponseComplete && depthChartResponseFuture.isDone()) {
 
+                logger.info("Finished fetching data from DepthChartService: " + httpServicesParams.getDepthChartServiceParams().getExternalApiHost());
+
                 depthChartResponseComplete = true;
 
                 ResponseEntity depthChartResponse = depthChartResponseFuture.get();
@@ -86,7 +101,9 @@ public class GetPlayersByPositionWorkbook {
 
             if (!playerRankingResponseComplete && playerRankingResponseFuture.isDone()) {
 
-                playerRankingResponseComplete = false;
+                logger.info("Finished fetching data from PlayerRankingService: " + httpServicesParams.getPlayerRankingServiceParams().getExternalApiHost());
+
+                playerRankingResponseComplete = true;
 
                 ResponseEntity playerRankListResponse = playerRankingResponseFuture.get();
                 String playerRankListBody = playerRankListResponse.getBody().toString();
@@ -97,11 +114,13 @@ public class GetPlayersByPositionWorkbook {
             }
 
             if (!depthChartComplete && leagueDepthChartFuture != null && leagueDepthChartFuture.isDone()) {
+                logger.info("Finished parsing payload for DepthChartService");
                 depthChartComplete = true;
                 leagueDepthChart = leagueDepthChartFuture.get();
             }
 
             if (!playerRankingComplete && playerRankListFuture != null && playerRankListFuture.isDone()) {
+                logger.info("Finished parsing payload for PlayerRankList");
                 playerRankingComplete = true;
                 playerRankList = playerRankListFuture.get();
             }
@@ -116,6 +135,8 @@ public class GetPlayersByPositionWorkbook {
             }
 
         }
+
+        logger.info("Finished building positionToStartingPlayersMap. Serving worksheet.");
 
         return new ModelAndView(new ExcelView(excelRowMapper), "positionToStartingPlayersMap", positionToStartingPlayersMap);
 
