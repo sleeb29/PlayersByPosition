@@ -158,6 +158,11 @@
 			<artifactId>cryptacular</artifactId>
 			<version>1.0</version>
 		</dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-oxm</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
 
     </dependencies>
 
@@ -173,6 +178,10 @@
 					</webAppConfig>
 				</configuration>
 			</plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
 		</plugins>
 	</build>
 	<dependencyManagement>
