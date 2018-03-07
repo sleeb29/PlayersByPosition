@@ -4,28 +4,33 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
-@Table(name = "PLAYER_RANK")
+@Table(name = "PLAYER_RANK_STAGE")
 @Entity
-public class PlayerRank implements java.io.Serializable {
+@XmlRootElement(name = "Player")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class PlayerRankStage implements java.io.Serializable {
 
     @Id
+    @XmlElement(name = "playerId")
     @Column(name = "playerId", nullable = false)
     String playerId;
 
+    @XmlElement(name = "playerName")
     @Column(name = "playerName", nullable = false)
     String playerName;
 
+    @XmlElement(name = "team")
     @Column(name = "team", nullable = false)
     String team;
 
-    @Column(name = "jersey")
-    int jersey;
-
+    @XmlElement(name = "rank")
     @Column(name = "rank", nullable = false)
     int rank;
-
-    Boolean processed;
 
     public String getPlayerName() {
         return playerName;
@@ -51,44 +56,12 @@ public class PlayerRank implements java.io.Serializable {
         this.rank = rank;
     }
 
-    public void setRanking(int rank) {
-        this.rank = rank;
-    }
-
     public String getPlayerId() {
         return playerId;
     }
 
     public void setPlayerId(String playerId) {
         this.playerId = playerId;
-    }
-
-    public int getJersey() {
-        return jersey;
-    }
-
-    public void setJersey(int jersey) {
-        this.jersey = jersey;
-    }
-
-    public String getKey() {
-
-        return this.jersey + "|" + this.team;
-
-    }
-
-    public String getSecondaryKey() {
-
-        return this.playerName + "|" + this.team;
-
-    }
-
-    public Boolean isProcessed() {
-        return processed != null && processed;
-    }
-
-    public void setProcessed(Boolean processed) {
-        this.processed = processed;
     }
 
 }

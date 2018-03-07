@@ -1,59 +1,220 @@
 package com.baseball.players_by_position.service.service;
 
-import com.baseball.players_by_position.model.Player;
-import com.baseball.players_by_position.model.PlayerRank;
-import com.baseball.players_by_position.service.repository.PlayerRepository;
+import com.baseball.players_by_position.model.*;
+import com.baseball.players_by_position.service.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 @Service
 public class PlayerServiceImpl implements PlayerService {
+
+    private static final Logger logger = Logger.getLogger(PlayerServiceImpl.class.getName());
 
     final static int STARTING_DEPTH_POSITION_NUM = 1;
     final static String OUTFIELD = "OF";
 
     @Autowired
+    private TeamCrossWalkRepository teamCrossWalkRepository;
+
+    @Autowired
+    private PlayerRankStageRepository playerRankStageRepository;
+
+    @Autowired
+    private RankPlayerStageRepository rankPlayerStageRepository;
+
+    @Autowired
+    private PlayerStageRepository playerStageRepository;
+
+    @Autowired
+    private PlayerRankRepository playerRankRepository;
+
+    @Autowired
     private PlayerRepository playerRepository;
 
     @Transactional
-    public void populate(List<Player> players, List<PlayerRank> playerRanks) {
+    public void populateTeamCrossWalkTable() {
 
-        HashMap<String, Integer> playerIdentifierToRankMap = new HashMap<>();
+    }
 
-        for (PlayerRank playerRank : playerRanks) {
-            String playerIdentifierHash = playerRank.getPlayerName() + "|" +
-                    playerRank.getTeam();
-            playerIdentifierToRankMap.put(playerIdentifierHash, playerRank.getRank());
-        }
+    @Transactional
+    public void populatePlayerStagingTable(List<PlayerStage> playerStageList) {
+        playerStageRepository.save(playerStageList);
+    }
 
-        for (Player player : players) {
+    @Transactional
+    public void populatePlayerRankStagingTable(List<PlayerRankStage> playerRankStageList) {
+        playerRankStageRepository.save(playerRankStageList);
+    }
 
-            String playerIdentifierHash = player.getFirstName() + " " + player.getLastName() + "|" +
-                    player.getTeam();
+    @Transactional
+    public void populateRankPlayerStagingTable(List<RankPlayerStage> rankPlayerStageList) {
+        rankPlayerStageRepository.save(rankPlayerStageList);
+    }
 
-            if (playerIdentifierToRankMap.containsKey(playerIdentifierHash)) {
-                player.setRank(playerIdentifierToRankMap.get(playerIdentifierHash));
+    @Transactional
+    public void aggregatePlayerRankTables() {
+
+        Iterable<PlayerRankStage> playerRankStageIterable = playerRankStageRepository.findAll();
+        Iterable<RankPlayerStage> rankPlayerStageIterable = rankPlayerStageRepository.findAll();
+
+        Boolean runStreamInParallel = true;
+
+        Stream playerRankStageStream = StreamSupport.stream(playerRankStageIterable.spliterator(), runStreamInParallel);
+        Map<String, PlayerRankStage> playerRankStageMap = (Map<String, PlayerRankStage>) playerRankStageStream.collect(
+                Collectors.toMap(PlayerRankStage::getPlayerId, playerRankStage -> playerRankStage));
+
+        Stream rankPlayerStageStream = StreamSupport.stream(rankPlayerStageIterable.spliterator(), runStreamInParallel);
+        Map<String, RankPlayerStage> rankPlayerStageMap = (Map<String, RankPlayerStage>) rankPlayerStageStream.collect(
+                Collectors.toMap(RankPlayerStage::getPlayerId, rankPlayerStage -> rankPlayerStage));
+
+        List<PlayerRank> playerRankList = new ArrayList<>();
+
+        for (Map.Entry<String, PlayerRankStage> entry : playerRankStageMap.entrySet()) {
+
+            String playerRankStageKey = entry.getKey();
+            PlayerRankStage playerRankStage = entry.getValue();
+
+            PlayerRank playerRank = new PlayerRank();
+            playerRank.setPlayerId(playerRankStage.getPlayerId());
+            playerRank.setPlayerName(playerRankStage.getPlayerName());
+            playerRank.setTeam(playerRankStage.getTeam());
+            playerRank.setRank(playerRankStage.getRank());
+
+            if (rankPlayerStageMap.containsKey(playerRankStageKey)) {
+
+                RankPlayerStage playerRankStagePlayer = rankPlayerStageMap.get(playerRankStageKey);
+                playerRank.setJersey(playerRankStagePlayer.getJersey());
+
+            } else {
+
+                logger.info("Unable to match record: " + playerRankStageKey + ". Please check incoming data");
+
             }
 
+            playerRankList.add(playerRank);
+
         }
 
+        playerRankRepository.save(playerRankList);
+
+    }
+
+    @Transactional
+    public void aggregateStagingTablesAndLoadActual() {
+
+        Iterable<PlayerRank> playerRankIterable = playerRankRepository.findAll();
+        Iterable<PlayerStage> playerStageIterable = playerStageRepository.findAll();
+
+        Boolean runStreamInParallel = true;
+
+        Stream playerRankStream = StreamSupport.stream(playerRankIterable.spliterator(), runStreamInParallel);
+
+        Map<String, PlayerRank> playerRankStageMap = (Map<String, PlayerRank>) playerRankStream.collect(
+                Collectors.toMap(PlayerRank::getKey, playerRankStage -> playerRankStage));
+
+        Stream playerStageStream = StreamSupport.stream(playerStageIterable.spliterator(), runStreamInParallel);
+        Map<String, PlayerStage> playerStageMap = (Map<String, PlayerStage>) playerStageStream.collect(
+                Collectors.toMap(PlayerStage::getKey, playerStage -> playerStage));
+
+        List<Player> players = new ArrayList<>();
+
+        for (Map.Entry<String, PlayerRank> entry : playerRankStageMap.entrySet()) {
+
+            String playerRankStageKey = entry.getKey();
+            PlayerRank playerRank = entry.getValue();
+
+            if (playerStageMap.containsKey(playerRankStageKey)) {
+
+                PlayerStage playerStage = playerStageMap.get(playerRankStageKey);
+
+                Player player = new Player();
+
+                player.setId(playerStage.getId());
+                player.setFirstName(playerStage.getFirstName());
+                player.setLastName(playerStage.getLastName());
+                player.setTeam(playerStage.getTeam());
+                player.setPosition(playerStage.getPosition());
+                player.setDepth(playerStage.getDepth());
+                player.setStatus(playerStage.getStatus());
+
+                player.setRank(playerRank.getRank());
+
+                playerStage.setProcessed(true);
+
+                players.add(player);
+
+            }
+
+            playerRank.setProcessed(true);
+
+        }
+
+        players.addAll(getUnprocessedPlayerRecords(playerRankStageMap, playerStageMap));
         playerRepository.save(players);
 
     }
 
+    private List<Player> getUnprocessedPlayerRecords(Map<String, PlayerRank> playerRankStageMap, Map<String, PlayerStage> playerStageMap) {
+
+        List<Player> unprocessedPlayers = new ArrayList<>();
+        for (Map.Entry<String, PlayerStage> entry : playerStageMap.entrySet()) {
+
+            PlayerStage playerStage = entry.getValue();
+
+            if (playerStage.isProcessed()) {
+                continue;
+            }
+
+            Player player = new Player();
+            String secondaryKey = playerStage.getSecondaryKey();
+
+            if (playerRankStageMap.containsKey(secondaryKey) &&
+                    !playerRankStageMap.get(secondaryKey).isProcessed()) {
+
+                PlayerRank playerRank = playerRankStageMap.get(secondaryKey);
+                player.setRank(playerRank.getRank());
+                playerRank.setProcessed(true);
+
+            } else {
+                player.setRank(0);
+            }
+
+            player.setId(playerStage.getId());
+            player.setFirstName(playerStage.getFirstName());
+            player.setLastName(playerStage.getLastName());
+            player.setTeam(playerStage.getTeam());
+            player.setPosition(playerStage.getPosition());
+            player.setDepth(playerStage.getDepth());
+            player.setStatus(playerStage.getStatus());
+
+            unprocessedPlayers.add(player);
+
+        }
+
+        return unprocessedPlayers;
+
+    }
+
     @Transactional(readOnly = true)
-    public HashMap<String, SortedSet<Player>> getPositionToStartingPlayersMap() {
+    public HashMap<String, List<Player>> getPositionToStartingPlayersMap() {
 
         HashMap<String, String> positionsToAggregateMap = new HashMap<>();
         positionsToAggregateMap.put(POSITIONS_TO_AGGREGATE.CF.name(), OUTFIELD);
         positionsToAggregateMap.put(POSITIONS_TO_AGGREGATE.LF.name(), OUTFIELD);
         positionsToAggregateMap.put(POSITIONS_TO_AGGREGATE.RF.name(), OUTFIELD);
 
-        Set<Player> players = playerRepository.getAllByDepth(STARTING_DEPTH_POSITION_NUM);
-        HashMap<String, SortedSet<Player>> positionToStartingPlayersMap = new HashMap<>();
+        List<Player> players = playerRepository.getAllByDepth(STARTING_DEPTH_POSITION_NUM);
+        HashMap<String, List<Player>> positionToStartingPlayersMap = new HashMap<>();
 
         for (Player player : players) {
 
@@ -64,10 +225,10 @@ public class PlayerServiceImpl implements PlayerService {
             }
 
             if (!positionToStartingPlayersMap.containsKey(position)) {
-                positionToStartingPlayersMap.put(position, new TreeSet<>(new CustomPlayerRankComparator()));
+                positionToStartingPlayersMap.put(position, new ArrayList<>());
             }
 
-            Set playerSetForPosition = positionToStartingPlayersMap.get(position);
+            List playerSetForPosition = positionToStartingPlayersMap.get(position);
 
             playerSetForPosition.add(player);
 
@@ -81,24 +242,6 @@ public class PlayerServiceImpl implements PlayerService {
         LF,
         RF,
         CF
-    }
-
-    class CustomPlayerRankComparator implements Comparator<Player> {
-        public int compare(Player playerOne, Player playerTwo) {
-
-            int playerOneRank = playerOne.getRank();
-            int playerTwoRank = playerTwo.getRank();
-
-            Boolean playerOneRankGreater = playerOneRank > playerTwoRank && playerTwoRank != 0;
-
-            if (playerOneRank == playerTwoRank) {
-                return 0;
-            } else if (playerOneRankGreater || playerOneRank == 0) {
-                return 1;
-            } else {
-                return -1;
-            }
-        }
     }
 
 }

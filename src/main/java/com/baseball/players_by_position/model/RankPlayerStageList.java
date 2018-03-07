@@ -11,17 +11,17 @@ import java.util.List;
 @XmlRootElement(name = "FantasyBaseballNerd")
 @XmlAccessorType(XmlAccessType.FIELD)
 @Component
-public class PlayerRankList {
+public class RankPlayerStageList {
 
     @XmlElement(name = "Player")
-    List<PlayerRankStage> playerRankings;
+    List<RankPlayerStage> rankPlayerList;
 
-    public List<PlayerRankStage> getPlayerRankings() {
-        return playerRankings;
+    public List<RankPlayerStage> getPlayerRankings() {
+        return rankPlayerList;
     }
 
-    public void setPlayerRankings(List<PlayerRankStage> playerRankings) {
-        this.playerRankings = playerRankings;
+    public void setPlayerRankings(List<RankPlayerStage> rankPlayerList) {
+        this.rankPlayerList = rankPlayerList;
     }
 
 }

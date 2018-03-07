@@ -12,7 +12,7 @@ public class PlayerRankingServiceParams implements IHttpServiceParams {
     private String externalApiScheme;
     @Value("${player_ranking.host}")
     private String externalApiHost;
-    @Value("${player_ranking.resource}")
+
     private String externalApiResource;
     @Value("${player_ranking.content_type}")
     private String externalApiContentType;
@@ -21,6 +21,10 @@ public class PlayerRankingServiceParams implements IHttpServiceParams {
     private String externalApiUri;
     @Value("${player_ranking.http_method}")
     private String externalHttpMethod;
+    @Value("${player_ranking.player_resource}")
+    private String playerResource;
+    @Value("${player_ranking.ranking_resource}")
+    private String rankingResource;
 
     @Override
     public String getExternalApiAuthChoice() {
@@ -100,5 +104,21 @@ public class PlayerRankingServiceParams implements IHttpServiceParams {
     @Override
     public void setExternalHttpMethod(String externalHttpMethod) {
         this.externalHttpMethod = externalHttpMethod;
+    }
+
+    public String getPlayerResource() {
+        return playerResource;
+    }
+
+    public void setPlayerResource(String playerResource) {
+        this.playerResource = playerResource;
+    }
+
+    public String getRankingResource() {
+        return rankingResource;
+    }
+
+    public void setRankingResource(String rankingResource) {
+        this.rankingResource = rankingResource;
     }
 }

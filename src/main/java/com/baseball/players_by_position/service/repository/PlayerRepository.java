@@ -6,12 +6,12 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.Set;
+import java.util.List;
 
 @Repository
 public interface PlayerRepository extends CrudRepository<Player, Long> {
 
-    @Query(name = "player_repository.get_all_by_depth")
-    Set<Player> getAllByDepth(@Param("depth") int depth);
+    @Query(value = "select p from Player p where p.depth = :depth or (p.position = 'SP' and p.depth <= 5) order by p.rank")
+    List<Player> getAllByDepth(@Param("depth") int depth);
 
 }

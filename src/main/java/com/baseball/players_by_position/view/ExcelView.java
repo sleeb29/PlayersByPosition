@@ -14,9 +14,10 @@ import org.springframework.web.servlet.view.document.AbstractXlsView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
 
 public class ExcelView extends AbstractXlsView {
 
@@ -35,12 +36,21 @@ public class ExcelView extends AbstractXlsView {
         response.setHeader("Content-Disposition", "attachment; filename=\"starters_by_position\"");
         response.setHeader("Content-Type", "application/octet-stream");
 
-        Map<String, SortedSet<Player>> positionToPlayersMap = (Map<String, SortedSet<Player>>) model.get("positionToStartingPlayersMap");
+        Map<String, ArrayList<Player>> positionToPlayersMap = (Map<String, ArrayList<Player>>) model.get("positionToStartingPlayersMap");
 
-        for (Map.Entry<String, SortedSet<Player>> entry : positionToPlayersMap.entrySet()) {
+        for (Map.Entry<String, ArrayList<Player>> entry : positionToPlayersMap.entrySet()) {
+
+            List<Player> players = entry.getValue();
+
+            CustomPlayerRankComparator comparator = new CustomPlayerRankComparator();
+            players.sort(comparator);
+
+        }
+
+        for (Map.Entry<String, ArrayList<Player>> entry : positionToPlayersMap.entrySet()) {
 
             String position = entry.getKey();
-            Set<Player> players = entry.getValue();
+            List<Player> players = entry.getValue();
 
             Sheet sheet = workbook.createSheet(position);
             sheet.setDefaultColumnWidth(30);
@@ -51,7 +61,7 @@ public class ExcelView extends AbstractXlsView {
 
     }
 
-    private void writeSheetRows(Sheet sheet, Set<Player> players){
+    private void writeSheetRows(Sheet sheet, List<Player> players) {
 
         Row header = sheet.createRow(0);
         excelRowMapper.mapHeaderRow(header);
@@ -64,6 +74,24 @@ public class ExcelView extends AbstractXlsView {
             rowCount++;
         }
 
+    }
+
+    class CustomPlayerRankComparator implements Comparator<Player> {
+        public int compare(Player playerOne, Player playerTwo) {
+
+            int playerOneRank = playerOne.getRank();
+            int playerTwoRank = playerTwo.getRank();
+
+            Boolean playerOneRankGreater = playerOneRank > playerTwoRank && playerTwoRank != 0;
+
+            if (playerOneRank == playerTwoRank) {
+                return 0;
+            } else if (playerOneRankGreater || playerOneRank == 0) {
+                return 1;
+            } else {
+                return -1;
+            }
+        }
     }
 
 }

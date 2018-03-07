@@ -1,5 +1,6 @@
-package com.baseball.players_by_position.external.provider;
+package com.baseball.players_by_position.external.provider.service;
 
+import com.baseball.players_by_position.external.provider.IHttpServiceParams;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContexts;
@@ -9,9 +10,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.AsyncResult;
-import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -21,10 +19,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.*;
 import java.security.cert.CertificateException;
-import java.util.concurrent.Future;
 import java.util.logging.Logger;
 
-@Service
 public class HttpService {
 
     private static final Logger logger = Logger.getLogger(HttpService.class.getName());
@@ -34,10 +30,16 @@ public class HttpService {
     @Value("${client.key_store_password_env_variable_name}")
     private String clientKeyStorePasswordEnvVariableName;
 
-    @Async
-    public Future<ResponseEntity> getHTTPResponse(IHttpServiceParams httpServiceParams) throws CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException {
+    public ResponseEntity getHTTPResponse(IHttpServiceParams httpServiceParams) throws CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException {
+
+        return getHTTPResponse(httpServiceParams, httpServiceParams.getExternalApiUri());
+
+    }
+
+    public ResponseEntity getHTTPResponse(IHttpServiceParams httpServiceParams, String uri) throws CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException {
 
         logger.info("in getHTTPResponse for service: " + httpServiceParams.getExternalApiHost());
+        logger.info(httpServiceParams.getExternalApiHost() + ": " + Thread.currentThread());
 
         HttpComponentsClientHttpRequestFactory httpComponentsClientHttpRequestFactory = new HttpComponentsClientHttpRequestFactory(createHttpClient());
         RestTemplate restTemplate = new RestTemplate(httpComponentsClientHttpRequestFactory);
@@ -46,15 +48,17 @@ public class HttpService {
         HttpHeaders headers = new HttpHeaders();
         HttpEntity<Object> request = new HttpEntity<>(params, headers);
         HttpMethod httpMethod = HttpMethod.valueOf(httpServiceParams.getExternalHttpMethod());
-        String updatedUri = httpServiceParams.getExternalApiUri();
+        String updatedUri = uri;
 
         if (httpServiceParams.getExternalApiAuthChoice().equals(AuthChoice.API_KEY_AUTHORIZATION.toString())) {
             String externalAPIKeyPropertyValue = System.getenv(httpServiceParams.getExternalApiKeyPropertyName());
-            updatedUri = httpServiceParams.getExternalApiUri().replace(httpServiceParams.getExternalApiKeyPropertyName(), externalAPIKeyPropertyValue);
+            updatedUri = uri.replace(httpServiceParams.getExternalApiKeyPropertyName(), externalAPIKeyPropertyValue);
         }
 
+        logger.info("updatedUri:" + updatedUri);
+
         ResponseEntity<String> httpResponse = restTemplate.exchange(updatedUri, httpMethod, request, String.class, params);
-        return new AsyncResult<>(httpResponse);
+        return httpResponse;
 
     }
 

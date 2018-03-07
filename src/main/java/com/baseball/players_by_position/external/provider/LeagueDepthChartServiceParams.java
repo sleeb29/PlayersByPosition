@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
-public class DepthChartServiceParams implements IHttpServiceParams {
+public class LeagueDepthChartServiceParams implements IHttpServiceParams {
 
     @Value("${depth_chart.auth_choice}")
     private String externalApiAuthChoice;
@@ -23,7 +23,7 @@ public class DepthChartServiceParams implements IHttpServiceParams {
     @Value("${depth_chart.http_method}")
     private String externalHttpMethod;
 
-    public DepthChartServiceParams() {
+    public LeagueDepthChartServiceParams() {
 
     }
 
