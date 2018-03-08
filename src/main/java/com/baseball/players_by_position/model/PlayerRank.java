@@ -7,7 +7,7 @@ import javax.persistence.Table;
 
 @Table(name = "PLAYER_RANK")
 @Entity
-public class PlayerRank implements java.io.Serializable {
+public class PlayerRank extends AbstractPlayer implements java.io.Serializable {
 
     @Id
     @Column(name = "playerId", nullable = false)
@@ -35,14 +35,6 @@ public class PlayerRank implements java.io.Serializable {
         this.playerName = playerName;
     }
 
-    public String getTeam() {
-        return team;
-    }
-
-    public void setTeam(String team) {
-        this.team = team;
-    }
-
     public int getRank() {
         return rank;
     }
@@ -63,24 +55,20 @@ public class PlayerRank implements java.io.Serializable {
         this.playerId = playerId;
     }
 
-    public int getJersey() {
-        return jersey;
-    }
-
-    public void setJersey(int jersey) {
-        this.jersey = jersey;
-    }
-
     public String getKey() {
 
         return this.jersey + "|" + this.team;
 
     }
 
-    public String getSecondaryKey() {
+    @Override
+    public String getFirstName() {
+        return this.playerName.split(" ")[0];
+    }
 
-        return this.playerName + "|" + this.team;
-
+    @Override
+    public String getLastName() {
+        return this.playerName.split(" ")[1];
     }
 
     public Boolean isProcessed() {
@@ -89,6 +77,22 @@ public class PlayerRank implements java.io.Serializable {
 
     public void setProcessed(Boolean processed) {
         this.processed = processed;
+    }
+
+    public String getTeam() {
+        return team;
+    }
+
+    public void setTeam(String team) {
+        this.team = team;
+    }
+
+    public int getJersey() {
+        return jersey;
+    }
+
+    public void setJersey(int jersey) {
+        this.jersey = jersey;
     }
 
 }

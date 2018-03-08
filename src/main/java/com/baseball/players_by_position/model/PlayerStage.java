@@ -9,7 +9,7 @@ import javax.persistence.Table;
 
 @Table(name = "PLAYER_STAGE")
 @Entity
-public class PlayerStage implements java.io.Serializable {
+public class PlayerStage extends AbstractPlayer implements java.io.Serializable {
 
     @Id
     @Column(name = "id", nullable = false)
@@ -41,22 +41,6 @@ public class PlayerStage implements java.io.Serializable {
 
     @Value("${java.lang.Boolean:true}")
     Boolean processed;
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
 
     public String getPosition() {
         return position;
@@ -90,30 +74,6 @@ public class PlayerStage implements java.io.Serializable {
         this.id = id;
     }
 
-    public String getTeam() {
-        return team;
-    }
-
-    public void setTeam(String team) {
-        this.team = team;
-    }
-
-    public int getRank() {
-        return rank;
-    }
-
-    public void setRank(int rank) {
-        this.rank = rank;
-    }
-
-    public int getJersey() {
-        return jersey;
-    }
-
-    public void setJersey(int jersey) {
-        this.jersey = jersey;
-    }
-
     public Boolean isProcessed() {
         return processed != null && processed;
     }
@@ -124,14 +84,46 @@ public class PlayerStage implements java.io.Serializable {
 
     public String getKey() {
 
-        return this.getJersey() + "|" + this.team;
+        return this.jersey + "|" + this.team;
 
     }
 
     public String getSecondaryKey() {
 
-        return this.getFirstName() + " " + this.getLastName() + "|" + this.team;
+        return this.firstName + " " + this.lastName + "|" + this.team;
 
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getTeam() {
+        return team;
+    }
+
+    public void setTeam(String team) {
+        this.team = team;
+    }
+
+    public int getJersey() {
+        return jersey;
+    }
+
+    public void setJersey(int jersey) {
+        this.jersey = jersey;
     }
 
 }

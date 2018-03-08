@@ -2,14 +2,12 @@ package com.baseball.players_by_position.service.service;
 
 import com.baseball.players_by_position.model.*;
 import com.baseball.players_by_position.service.repository.*;
+import com.baseball.players_by_position.service.search.PlayerTrie;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -77,6 +75,14 @@ public class PlayerServiceImpl implements PlayerService {
         Map<String, RankPlayerStage> rankPlayerStageMap = (Map<String, RankPlayerStage>) rankPlayerStageStream.collect(
                 Collectors.toMap(RankPlayerStage::getPlayerId, rankPlayerStage -> rankPlayerStage));
 
+        List<PlayerRank> playerRankList = getPlayerRankList(rankPlayerStageMap, playerRankStageMap);
+
+        playerRankRepository.save(playerRankList);
+
+    }
+
+    private List<PlayerRank> getPlayerRankList(Map<String, RankPlayerStage> rankPlayerStageMap, Map<String, PlayerRankStage> playerRankStageMap) {
+
         List<PlayerRank> playerRankList = new ArrayList<>();
 
         for (Map.Entry<String, PlayerRankStage> entry : playerRankStageMap.entrySet()) {
@@ -105,89 +111,35 @@ public class PlayerServiceImpl implements PlayerService {
 
         }
 
-        playerRankRepository.save(playerRankList);
+        return playerRankList;
 
     }
 
     @Transactional
     public void aggregateStagingTablesAndLoadActual() {
 
-        Iterable<PlayerRank> playerRankIterable = playerRankRepository.findAll();
+        Iterator<PlayerRank> playerRankIterable = playerRankRepository.findAll().iterator();
         Iterable<PlayerStage> playerStageIterable = playerStageRepository.findAll();
 
-        Boolean runStreamInParallel = true;
-
-        Stream playerRankStream = StreamSupport.stream(playerRankIterable.spliterator(), runStreamInParallel);
-
-        Map<String, PlayerRank> playerRankStageMap = (Map<String, PlayerRank>) playerRankStream.collect(
-                Collectors.toMap(PlayerRank::getKey, playerRankStage -> playerRankStage));
-
-        Stream playerStageStream = StreamSupport.stream(playerStageIterable.spliterator(), runStreamInParallel);
-        Map<String, PlayerStage> playerStageMap = (Map<String, PlayerStage>) playerStageStream.collect(
-                Collectors.toMap(PlayerStage::getKey, playerStage -> playerStage));
+        PlayerTrie playerStageTrie = buildPlayerTrie(playerStageIterable);
 
         List<Player> players = new ArrayList<>();
 
-        for (Map.Entry<String, PlayerRank> entry : playerRankStageMap.entrySet()) {
+        while (playerRankIterable.hasNext()) {
 
-            String playerRankStageKey = entry.getKey();
-            PlayerRank playerRank = entry.getValue();
+            PlayerRank playerRank = playerRankIterable.next();
 
-            if (playerStageMap.containsKey(playerRankStageKey)) {
+            AbstractPlayer trieResult = playerStageTrie.get(playerRank);
 
-                PlayerStage playerStage = playerStageMap.get(playerRankStageKey);
-
-                Player player = new Player();
-
-                player.setId(playerStage.getId());
-                player.setFirstName(playerStage.getFirstName());
-                player.setLastName(playerStage.getLastName());
-                player.setTeam(playerStage.getTeam());
-                player.setPosition(playerStage.getPosition());
-                player.setDepth(playerStage.getDepth());
-                player.setStatus(playerStage.getStatus());
-
-                player.setRank(playerRank.getRank());
-
-                playerStage.setProcessed(true);
-
-                players.add(player);
-
-            }
-
-            playerRank.setProcessed(true);
-
-        }
-
-        players.addAll(getUnprocessedPlayerRecords(playerRankStageMap, playerStageMap));
-        playerRepository.save(players);
-
-    }
-
-    private List<Player> getUnprocessedPlayerRecords(Map<String, PlayerRank> playerRankStageMap, Map<String, PlayerStage> playerStageMap) {
-
-        List<Player> unprocessedPlayers = new ArrayList<>();
-        for (Map.Entry<String, PlayerStage> entry : playerStageMap.entrySet()) {
-
-            PlayerStage playerStage = entry.getValue();
-
-            if (playerStage.isProcessed()) {
+            if (trieResult == null) {
+                logger.info("Unable to find match for: " + playerRank.getPlayerName() + " playing for " +
+                        playerRank.getTeam());
                 continue;
             }
 
+            PlayerStage playerStage = (PlayerStage) trieResult;
+
             Player player = new Player();
-            String secondaryKey = playerStage.getSecondaryKey();
-
-            if (playerRankStageMap.containsKey(secondaryKey) &&
-                    !playerRankStageMap.get(secondaryKey).isProcessed()) {
-
-                PlayerRank playerRank = playerRankStageMap.get(secondaryKey);
-                player.setRank(playerRank.getRank());
-                playerRank.setProcessed(true);
-
-            } else {
-                player.setRank(0);
-            }
 
             player.setId(playerStage.getId());
             player.setFirstName(playerStage.getFirstName());
@@ -196,12 +148,27 @@ public class PlayerServiceImpl implements PlayerService {
             player.setPosition(playerStage.getPosition());
             player.setDepth(playerStage.getDepth());
             player.setStatus(playerStage.getStatus());
+            player.setRank(playerRank.getRank());
 
-            unprocessedPlayers.add(player);
+            players.add(player);
+            playerStage.setProcessed(true);
+            playerRank.setProcessed(true);
 
         }
 
-        return unprocessedPlayers;
+        playerRepository.save(players);
+
+    }
+
+    public PlayerTrie buildPlayerTrie(Iterable<PlayerStage> playerIterable) {
+
+        PlayerTrie playerTrie = new PlayerTrie();
+
+        for (PlayerStage player : playerIterable) {
+            playerTrie.put(player);
+        }
+
+        return playerTrie;
 
     }
 
