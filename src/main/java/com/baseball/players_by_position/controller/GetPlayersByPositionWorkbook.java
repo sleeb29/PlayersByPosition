@@ -1,6 +1,5 @@
 package com.baseball.players_by_position.controller;
 
-import com.baseball.players_by_position.external.provider.HttpServicesParams;
 import com.baseball.players_by_position.external.provider.service.GetPlayerService;
 import com.baseball.players_by_position.model.Player;
 import com.baseball.players_by_position.service.service.PlayerService;
@@ -29,9 +28,6 @@ public class GetPlayersByPositionWorkbook {
 
     @Autowired
     PlayerService playerService;
-
-    @Autowired
-    HttpServicesParams httpServicesParams;
 
     @Autowired
     IExcelRowMapper excelRowMapper;
