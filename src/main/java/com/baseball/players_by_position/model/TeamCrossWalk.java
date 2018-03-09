@@ -19,6 +19,12 @@ public class TeamCrossWalk {
     @Column(name = "player_ranking_name", nullable = false)
     String playerRankingName;
 
+    public TeamCrossWalk(String commonName, String depthChartName, String playerRankingName) {
+        this.commonName = commonName;
+        this.depthChartName = depthChartName;
+        this.playerRankingName = playerRankingName;
+    }
+
     public long getId() {
         return id;
     }

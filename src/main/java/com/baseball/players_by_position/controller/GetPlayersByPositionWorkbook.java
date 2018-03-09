@@ -6,6 +6,7 @@ import com.baseball.players_by_position.service.service.PlayerService;
 import com.baseball.players_by_position.view.ExcelView;
 import com.baseball.players_by_position.view.mapper.IExcelRowMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -36,7 +37,7 @@ public class GetPlayersByPositionWorkbook {
     GetPlayerService getPlayerService;
     
     @RequestMapping(value = "/getStartersByPositionWorkbook", method = RequestMethod.GET)
-    //@Cacheable("positionToStartingPlayersWorkbook")
+    @Cacheable("positionToStartingPlayersWorkbook")
     public ModelAndView getStartersByPositionWorkbook(Model model) throws CertificateException, UnrecoverableKeyException, NoSuchAlgorithmException, KeyStoreException, KeyManagementException, IOException, JAXBException, XMLStreamException {
 
         Map<String, List<Player>> positionToStartingPlayersMap = getPlayerService.getPositionToStartingPlayersMap();

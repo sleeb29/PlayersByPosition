@@ -28,6 +28,10 @@ public class PlayerRankStage implements java.io.Serializable {
     @Column(name = "team", nullable = false)
     String team;
 
+    @XmlElement(name = "position")
+    @Column(name = "position", nullable = true)
+    String position;
+
     @XmlElement(name = "rank")
     @Column(name = "rank", nullable = false)
     int rank;
@@ -62,6 +66,14 @@ public class PlayerRankStage implements java.io.Serializable {
 
     public void setPlayerId(String playerId) {
         this.playerId = playerId;
+    }
+
+    public String getPosition() {
+        return position;
+    }
+
+    public void setPosition(String position) {
+        this.position = position;
     }
 
 }

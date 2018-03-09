@@ -82,18 +82,7 @@ public class PlayerStage extends AbstractPlayer implements java.io.Serializable 
         this.processed = processed;
     }
 
-    public String getKey() {
-
-        return this.jersey + "|" + this.team;
-
-    }
-
-    public String getSecondaryKey() {
-
-        return this.firstName + " " + this.lastName + "|" + this.team;
-
-    }
-
+    @Override
     public String getFirstName() {
         return firstName;
     }
@@ -102,6 +91,7 @@ public class PlayerStage extends AbstractPlayer implements java.io.Serializable 
         this.firstName = firstName;
     }
 
+    @Override
     public String getLastName() {
         return lastName;
     }
@@ -110,6 +100,7 @@ public class PlayerStage extends AbstractPlayer implements java.io.Serializable 
         this.lastName = lastName;
     }
 
+    @Override
     public String getTeam() {
         return team;
     }
@@ -118,6 +109,7 @@ public class PlayerStage extends AbstractPlayer implements java.io.Serializable 
         this.team = team;
     }
 
+    @Override
     public int getJersey() {
         return jersey;
     }

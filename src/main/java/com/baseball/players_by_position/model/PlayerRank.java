@@ -25,6 +25,12 @@ public class PlayerRank extends AbstractPlayer implements java.io.Serializable {
     @Column(name = "rank", nullable = false)
     int rank;
 
+    @Column(name = "position", nullable = true)
+    String position;
+
+    String firstName;
+    String lastName;
+
     Boolean processed;
 
     public String getPlayerName() {
@@ -55,20 +61,42 @@ public class PlayerRank extends AbstractPlayer implements java.io.Serializable {
         this.playerId = playerId;
     }
 
-    public String getKey() {
-
-        return this.jersey + "|" + this.team;
-
-    }
-
     @Override
     public String getFirstName() {
-        return this.playerName.split(" ")[0];
+        if (this.firstName != null) {
+            return this.firstName;
+        }
+
+        this.firstName = this.playerName.split(" ")[0];
+        return firstName;
     }
 
     @Override
     public String getLastName() {
-        return this.playerName.split(" ")[1];
+        if (this.lastName != null) {
+            return this.lastName;
+        }
+
+        this.lastName = this.playerName.split(" ", 2)[1];
+        return lastName;
+    }
+
+    @Override
+    public String getTeam() {
+        return team;
+    }
+
+    public void setTeam(String team) {
+        this.team = team;
+    }
+
+    @Override
+    public int getJersey() {
+        return jersey;
+    }
+
+    public void setJersey(int jersey) {
+        this.jersey = jersey;
     }
 
     public Boolean isProcessed() {
@@ -79,20 +107,12 @@ public class PlayerRank extends AbstractPlayer implements java.io.Serializable {
         this.processed = processed;
     }
 
-    public String getTeam() {
-        return team;
+    @Override
+    public String getPosition() {
+        return position;
     }
 
-    public void setTeam(String team) {
-        this.team = team;
+    public void setPosition(String position) {
+        this.position = position;
     }
-
-    public int getJersey() {
-        return jersey;
-    }
-
-    public void setJersey(int jersey) {
-        this.jersey = jersey;
-    }
-
 }

@@ -40,12 +40,24 @@ public class PlayerServiceImpl implements PlayerService {
     private PlayerRepository playerRepository;
 
     @Transactional
-    public void populateTeamCrossWalkTable() {
-
+    public void populateTeamCrossWalkTable(List<TeamCrossWalk> teamCrossWalkList) {
+        teamCrossWalkRepository.save(teamCrossWalkList);
     }
 
     @Transactional
     public void populatePlayerStagingTable(List<PlayerStage> playerStageList) {
+
+        Iterable<TeamCrossWalk> teamCrossWalkIterable = teamCrossWalkRepository.findAll();
+        Boolean runStreamInParallel = true;
+        Stream teamCrossWalkStream = StreamSupport.stream(teamCrossWalkIterable.spliterator(), runStreamInParallel);
+
+        Map<String, String> depthTeamNameToCommonNameMap = (Map<String, String>) teamCrossWalkStream.collect(
+                Collectors.toMap(TeamCrossWalk::getDepthChartName, TeamCrossWalk::getCommonName));
+
+        for (PlayerStage playerStage : playerStageList) {
+            playerStage.setTeam(getCommonTeamName(playerStage.getTeam(), depthTeamNameToCommonNameMap));
+        }
+
         playerStageRepository.save(playerStageList);
     }
 
@@ -83,6 +95,13 @@ public class PlayerServiceImpl implements PlayerService {
 
     private List<PlayerRank> getPlayerRankList(Map<String, RankPlayerStage> rankPlayerStageMap, Map<String, PlayerRankStage> playerRankStageMap) {
 
+        Iterable<TeamCrossWalk> teamCrossWalkIterable = teamCrossWalkRepository.findAll();
+        Boolean runStreamInParallel = true;
+        Stream teamCrossWalkStream = StreamSupport.stream(teamCrossWalkIterable.spliterator(), runStreamInParallel);
+
+        Map<String, String> rankTeamNameToCommonNameMap = (Map<String, String>) teamCrossWalkStream.collect(
+                Collectors.toMap(TeamCrossWalk::getPlayerRankingName, TeamCrossWalk::getCommonName));
+
         List<PlayerRank> playerRankList = new ArrayList<>();
 
         for (Map.Entry<String, PlayerRankStage> entry : playerRankStageMap.entrySet()) {
@@ -93,8 +112,12 @@ public class PlayerServiceImpl implements PlayerService {
             PlayerRank playerRank = new PlayerRank();
             playerRank.setPlayerId(playerRankStage.getPlayerId());
             playerRank.setPlayerName(playerRankStage.getPlayerName());
-            playerRank.setTeam(playerRankStage.getTeam());
+
+            String team = getCommonTeamName(playerRankStage.getTeam(), rankTeamNameToCommonNameMap);
+
+            playerRank.setTeam(team);
             playerRank.setRank(playerRankStage.getRank());
+            playerRank.setPosition(playerRankStage.getPosition());
 
             if (rankPlayerStageMap.containsKey(playerRankStageKey)) {
 
@@ -115,6 +138,15 @@ public class PlayerServiceImpl implements PlayerService {
 
     }
 
+    private String getCommonTeamName(String sourceTeam, Map<String, String> sourceToTargetMap) {
+
+        if (sourceToTargetMap.containsKey(sourceTeam)) {
+            return sourceToTargetMap.get(sourceTeam);
+        }
+
+        return sourceTeam;
+    }
+
     @Transactional
     public void aggregateStagingTablesAndLoadActual() {
 
@@ -132,13 +164,14 @@ public class PlayerServiceImpl implements PlayerService {
             AbstractPlayer trieResult = playerStageTrie.get(playerRank);
 
             if (trieResult == null) {
-                logger.info("Unable to find match for: " + playerRank.getPlayerName() + " playing for " +
-                        playerRank.getTeam());
+                logger.info(playerRank.getPlayerName() + " UNABLE TO FIND MATCH FantasyBaseballNerds. playing for " +
+                        playerRank.getTeam() + " " + playerRank.getJersey() + " " + playerRank.getTeam());
+
                 continue;
+
             }
 
             PlayerStage playerStage = (PlayerStage) trieResult;
-
             Player player = new Player();
 
             player.setId(playerStage.getId());

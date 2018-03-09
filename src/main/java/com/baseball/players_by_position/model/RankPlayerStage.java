@@ -36,4 +36,5 @@ public class RankPlayerStage {
     public void setJersey(int jersey) {
         this.jersey = jersey;
     }
+
 }

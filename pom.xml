@@ -179,6 +179,11 @@
 			<artifactId>spring-batch-infrastructure</artifactId>
 			<version>3.0.8.RELEASE</version>
 		</dependency>
+        <dependency>
+            <groupId>org.springframework.batch</groupId>
+            <artifactId>spring-batch-core</artifactId>
+            <version>3.0.8.RELEASE</version>
+        </dependency>
 
     </dependencies>
 
