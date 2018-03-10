@@ -58,7 +58,7 @@ public class DepthChartDeserializer extends StdDeserializer<LeagueDepthChart> {
         for (int i = 0; i < numOfTeams; i++) {
 
             TreeNode teamNode = rootNode.get(i);
-            String teamName = teamNode.get(TEAM_NAME_FIELD).toString();
+            String teamName = formatTreeNodeToString(teamNode.get(TEAM_NAME_FIELD));
 
             players.addAll(getPlayersForTeam(teamNode, teamName));
 
@@ -148,7 +148,7 @@ public class DepthChartDeserializer extends StdDeserializer<LeagueDepthChart> {
         playerStage.setId(formatTreeNodeToString(playerNode.get(PLAYER_ID_FIELD)));
         playerStage.setFirstName(firstName);
         playerStage.setLastName(lastName);
-        playerStage.setTeam(teamName.replace("\"", ""));
+        playerStage.setTeam(teamName);
         playerStage.setPosition(positionName);
         playerStage.setDepth(depth);
         playerStage.setStatus(formatTreeNodeToString(playerNode.get(STATUS_FIELD)));
