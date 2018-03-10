@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface PlayerRepository extends CrudRepository<Player, Long> {
 
-    @Query(value = "select p from Player p where p.depth = :depth or (p.position = 'SP' and p.depth <= 5) or (p.position = 'CL' and p.depth <=2) order by p.rank")
+    @Query(value = "select p from Player p where p.depth = :depth or (p.position = 'SP' and p.depth <= 5) or (p.position = 'CL' and p.depth <= 2) order by p.rank")
     List<Player> getAllStarters(@Param("depth") int depth);
 
 }
