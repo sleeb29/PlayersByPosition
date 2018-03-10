@@ -7,10 +7,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class PositionExcelRowMapper implements IExcelRowMapper<Player> {
 
-    static final String FIRST_NAME = "Player Name";
-    static final String TEAM = "Team";
-    static final String STATUS = "Status";
-    static final String RANK = "Rank";
+    final String FIRST_NAME = "Player Name";
+    final String TEAM = "Team";
+    final String STATUS = "Status";
+    final String RANK = "Rank";
+    final String DEPTH = "DEPTH";
 
     public void mapHeaderRow(Row row){
 
@@ -18,6 +19,7 @@ public class PositionExcelRowMapper implements IExcelRowMapper<Player> {
         row.createCell(1).setCellValue(TEAM);
         row.createCell(2).setCellValue(STATUS);
         row.createCell(3).setCellValue(RANK);
+        row.createCell(4).setCellValue(DEPTH);
     }
 
     public void mapRow(Row row, Player player){
@@ -26,6 +28,7 @@ public class PositionExcelRowMapper implements IExcelRowMapper<Player> {
         row.createCell(1).setCellValue(player.getTeam());
         row.createCell(2).setCellValue(player.getStatus());
         row.createCell(3).setCellValue(player.getRank());
+        row.createCell(4).setCellValue(player.getDepth());
 
     }
 
