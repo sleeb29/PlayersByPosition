@@ -1,6 +1,6 @@
 package com.baseball.players_by_position.external.provider.service;
 
-import com.baseball.players_by_position.external.provider.IHttpServiceParams;
+import com.baseball.players_by_position.external.provider.params.IHttpServiceParams;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.ssl.SSLContexts;

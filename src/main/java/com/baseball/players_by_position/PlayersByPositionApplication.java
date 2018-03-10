@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 		"com.baseball.players_by_position.view",
 		"com.baseball.players_by_position.view.mapper",
 		"com.baseball.players_by_position.configuration.properties",
-		"com.baseball.players_by_position.external.provider",
+		"com.baseball.players_by_position.external.provider.params",
 		"com.baseball.players_by_position.external.provider.service",
 		"com.baseball.players_by_position.configuration.web",
 		"com.baseball.players_by_position.external.provider.flatfile",

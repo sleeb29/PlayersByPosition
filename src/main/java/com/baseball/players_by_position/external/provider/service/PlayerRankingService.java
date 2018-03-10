@@ -1,6 +1,6 @@
 package com.baseball.players_by_position.external.provider.service;
 
-import com.baseball.players_by_position.external.provider.PlayerRankingServiceParams;
+import com.baseball.players_by_position.external.provider.params.PlayerRankingServiceParams;
 import com.baseball.players_by_position.model.PlayerRankList;
 import com.baseball.players_by_position.model.RankPlayerStageList;
 import com.baseball.players_by_position.service.service.PlayerService;
