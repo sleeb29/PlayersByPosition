@@ -19,11 +19,12 @@ public class PlayerServiceImpl implements PlayerService {
 
     private static final Logger logger = Logger.getLogger(PlayerServiceImpl.class.getName());
 
-    public final int STARTING_DEPTH_POSITION_NUM = 1;
-    public final int STARTER_PITCHER_DEPTH_POSITION_NUM = 5;
-    public final String STARTER_PITCHER = "SP";
-    public final int CLOSER_DEPTH_POSITION_NUM = 2;
-    public final String CLOSER = "CL";
+    static public final int STARTING_DEPTH_POSITION_NUM = 1;
+    static public final int STARTER_PITCHER_DEPTH_POSITION_NUM = 5;
+    static public final String STARTER_PITCHER = "SP";
+    static public final int CLOSER_DEPTH_POSITION_NUM = 2;
+    static public final String CLOSER = "CL";
+    
     final String OUTFIELD = "OF";
 
     @Autowired
