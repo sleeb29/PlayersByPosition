@@ -27,7 +27,7 @@ public class TeamCrossWalkParser {
                 .skip(1)
                 .map((line) -> line.split(","))
                 .filter(record -> record.length == 3)
-                .map(record -> new TeamCrossWalk(record[0], record[1], record[2]))
+                .map(record -> new TeamCrossWalk(record[0].replace(" ", ""), record[1].replace(" ", ""), record[2].replace(" ", "")))
                 .collect(Collectors.toList());
 
         return teamCrossWalkList;

@@ -36,6 +36,9 @@ public class PlayerRankStage implements java.io.Serializable {
     @Column(name = "rank", nullable = false)
     int rank;
 
+    String firstName;
+    String lastName;
+
     public String getPlayerName() {
         return playerName;
     }
@@ -74,6 +77,24 @@ public class PlayerRankStage implements java.io.Serializable {
 
     public void setPosition(String position) {
         this.position = position;
+    }
+
+    public String getFirstName() {
+        if (this.firstName != null) {
+            return this.firstName;
+        }
+
+        this.firstName = this.playerName.split(" ")[0];
+        return firstName;
+    }
+
+    public String getLastName() {
+        if (this.lastName != null) {
+            return this.lastName;
+        }
+
+        this.lastName = this.playerName.split(" ", 2)[1];
+        return lastName;
     }
 
 }

@@ -39,6 +39,12 @@ public class PlayerStage extends AbstractPlayer implements java.io.Serializable 
     @Column(name = "rank", nullable = true)
     int rank;
 
+    @Column(name = "lookup_first_name", nullable = false)
+    String lookupFirstName;
+
+    @Column(name = "lookup_last_name", nullable = false)
+    String lookupLastName;
+
     @Value("${java.lang.Boolean:true}")
     Boolean processed;
 
@@ -82,7 +88,6 @@ public class PlayerStage extends AbstractPlayer implements java.io.Serializable 
         this.processed = processed;
     }
 
-    @Override
     public String getFirstName() {
         return firstName;
     }
@@ -91,7 +96,6 @@ public class PlayerStage extends AbstractPlayer implements java.io.Serializable 
         this.firstName = firstName;
     }
 
-    @Override
     public String getLastName() {
         return lastName;
     }
@@ -116,6 +120,24 @@ public class PlayerStage extends AbstractPlayer implements java.io.Serializable 
 
     public void setJersey(int jersey) {
         this.jersey = jersey;
+    }
+
+    @Override
+    public String getLookupFirstName() {
+        return lookupFirstName;
+    }
+
+    public void setLookupFirstName(String lookupFirstName) {
+        this.lookupFirstName = lookupFirstName;
+    }
+
+    @Override
+    public String getLookupLastName() {
+        return lookupLastName;
+    }
+
+    public void setLookupLastName(String lookupLastName) {
+        this.lookupLastName = lookupLastName;
     }
 
 }

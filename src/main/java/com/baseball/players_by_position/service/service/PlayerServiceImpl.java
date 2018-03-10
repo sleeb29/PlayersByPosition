@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.Normalizer;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -18,7 +19,12 @@ public class PlayerServiceImpl implements PlayerService {
 
     private static final Logger logger = Logger.getLogger(PlayerServiceImpl.class.getName());
 
-    final static int STARTING_DEPTH_POSITION_NUM = 1;
+    public final static int STARTING_DEPTH_POSITION_NUM = 1;
+    public final static int STARTER_PITCHER_DEPTH_POSITION_NUM = 5;
+    public final static String STARTER_PITCHER = "SP";
+    public final static int CLOSER_DEPTH_POSITION_NUM = 2;
+    public final static String CLOSER = "CL";
+
     final static String OUTFIELD = "OF";
 
     @Autowired
@@ -44,6 +50,15 @@ public class PlayerServiceImpl implements PlayerService {
         teamCrossWalkRepository.save(teamCrossWalkList);
     }
 
+    private String getCommonTeamName(String sourceTeam, Map<String, String> sourceToTargetMap) {
+
+        if (sourceToTargetMap.containsKey(sourceTeam)) {
+            return sourceToTargetMap.get(sourceTeam);
+        }
+
+        return sourceTeam;
+    }
+
     @Transactional
     public void populatePlayerStagingTable(List<PlayerStage> playerStageList) {
 
@@ -56,6 +71,8 @@ public class PlayerServiceImpl implements PlayerService {
 
         for (PlayerStage playerStage : playerStageList) {
             playerStage.setTeam(getCommonTeamName(playerStage.getTeam(), depthTeamNameToCommonNameMap));
+            playerStage.setLookupFirstName(normalize(playerStage.getFirstName()));
+            playerStage.setLookupLastName(normalize(playerStage.getLastName()));
         }
 
         playerStageRepository.save(playerStageList);
@@ -119,6 +136,9 @@ public class PlayerServiceImpl implements PlayerService {
             playerRank.setRank(playerRankStage.getRank());
             playerRank.setPosition(playerRankStage.getPosition());
 
+            playerRank.setLookupFirstName(normalize(playerRankStage.getFirstName()));
+            playerRank.setLookupLastName(normalize(playerRankStage.getLastName()));
+
             if (rankPlayerStageMap.containsKey(playerRankStageKey)) {
 
                 RankPlayerStage playerRankStagePlayer = rankPlayerStageMap.get(playerRankStageKey);
@@ -138,15 +158,6 @@ public class PlayerServiceImpl implements PlayerService {
 
     }
 
-    private String getCommonTeamName(String sourceTeam, Map<String, String> sourceToTargetMap) {
-
-        if (sourceToTargetMap.containsKey(sourceTeam)) {
-            return sourceToTargetMap.get(sourceTeam);
-        }
-
-        return sourceTeam;
-    }
-
     @Transactional
     public void aggregateStagingTablesAndLoadActual() {
 
@@ -164,8 +175,8 @@ public class PlayerServiceImpl implements PlayerService {
             AbstractPlayer trieResult = playerStageTrie.get(playerRank);
 
             if (trieResult == null) {
-                logger.info(playerRank.getPlayerName() + " UNABLE TO FIND MATCH FantasyBaseballNerds. playing for " +
-                        playerRank.getTeam() + " " + playerRank.getJersey() + " " + playerRank.getTeam());
+                logger.info(playerRank.getPlayerName() + " UNABLE TO FIND MATCH Ranking Service. playing for " +
+                        playerRank.getTeam() + " " + playerRank.getJersey());
 
                 continue;
 
@@ -183,6 +194,9 @@ public class PlayerServiceImpl implements PlayerService {
             player.setStatus(playerStage.getStatus());
             player.setRank(playerRank.getRank());
 
+            player.setLookupFirstName(playerStage.getLookupFirstName());
+            player.setLookupLastName(playerStage.getLookupLastName());
+
             players.add(player);
             playerStage.setProcessed(true);
             playerRank.setProcessed(true);
@@ -190,18 +204,6 @@ public class PlayerServiceImpl implements PlayerService {
         }
 
         playerRepository.save(players);
-
-    }
-
-    public PlayerTrie buildPlayerTrie(Iterable<PlayerStage> playerIterable) {
-
-        PlayerTrie playerTrie = new PlayerTrie();
-
-        for (PlayerStage player : playerIterable) {
-            playerTrie.put(player);
-        }
-
-        return playerTrie;
 
     }
 
@@ -213,7 +215,7 @@ public class PlayerServiceImpl implements PlayerService {
         positionsToAggregateMap.put(POSITIONS_TO_AGGREGATE.LF.name(), OUTFIELD);
         positionsToAggregateMap.put(POSITIONS_TO_AGGREGATE.RF.name(), OUTFIELD);
 
-        List<Player> players = playerRepository.getAllByDepth(STARTING_DEPTH_POSITION_NUM);
+        List<Player> players = playerRepository.getAllStarters(STARTING_DEPTH_POSITION_NUM);
         HashMap<String, List<Player>> positionToStartingPlayersMap = new HashMap<>();
 
         for (Player player : players) {
@@ -235,6 +237,33 @@ public class PlayerServiceImpl implements PlayerService {
         }
 
         return positionToStartingPlayersMap;
+
+    }
+
+    public PlayerTrie buildPlayerTrie(Iterable<PlayerStage> playerIterable) {
+
+        PlayerTrie playerTrie = new PlayerTrie();
+
+        for (PlayerStage player : playerIterable) {
+            playerTrie.put(player);
+        }
+
+        return playerTrie;
+
+    }
+
+    private String normalize(String stringToNormalize) {
+
+        String normalizedString = Normalizer.normalize(stringToNormalize, Normalizer.Form.NFD);
+
+        StringBuilder stringBuilder = new StringBuilder();
+        for (char c : normalizedString.toCharArray()) {
+            if (c <= '\u007F') {
+                stringBuilder.append(c);
+            }
+        }
+
+        return stringBuilder.toString();
 
     }
 

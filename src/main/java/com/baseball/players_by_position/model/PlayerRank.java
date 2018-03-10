@@ -28,8 +28,11 @@ public class PlayerRank extends AbstractPlayer implements java.io.Serializable {
     @Column(name = "position", nullable = true)
     String position;
 
-    String firstName;
-    String lastName;
+    @Column(name = "lookup_first_name", nullable = false)
+    String lookupFirstName;
+
+    @Column(name = "lookup_last_name", nullable = false)
+    String lookupLastName;
 
     Boolean processed;
 
@@ -59,26 +62,6 @@ public class PlayerRank extends AbstractPlayer implements java.io.Serializable {
 
     public void setPlayerId(String playerId) {
         this.playerId = playerId;
-    }
-
-    @Override
-    public String getFirstName() {
-        if (this.firstName != null) {
-            return this.firstName;
-        }
-
-        this.firstName = this.playerName.split(" ")[0];
-        return firstName;
-    }
-
-    @Override
-    public String getLastName() {
-        if (this.lastName != null) {
-            return this.lastName;
-        }
-
-        this.lastName = this.playerName.split(" ", 2)[1];
-        return lastName;
     }
 
     @Override
@@ -114,5 +97,23 @@ public class PlayerRank extends AbstractPlayer implements java.io.Serializable {
 
     public void setPosition(String position) {
         this.position = position;
+    }
+
+    @Override
+    public String getLookupFirstName() {
+        return lookupFirstName;
+    }
+
+    public void setLookupFirstName(String lookupFirstName) {
+        this.lookupFirstName = lookupFirstName;
+    }
+
+    @Override
+    public String getLookupLastName() {
+        return lookupLastName;
+    }
+
+    public void setLookupLastName(String lookupLastName) {
+        this.lookupLastName = lookupLastName;
     }
 }
