@@ -24,7 +24,7 @@ public class PlayerServiceImpl implements PlayerService {
     static public final String STARTER_PITCHER = "SP";
     static public final int CLOSER_DEPTH_POSITION_NUM = 2;
     static public final String CLOSER = "CL";
-    
+
     final String OUTFIELD = "OF";
 
     @Autowired
