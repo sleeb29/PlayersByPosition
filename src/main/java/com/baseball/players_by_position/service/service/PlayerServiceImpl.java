@@ -19,13 +19,12 @@ public class PlayerServiceImpl implements PlayerService {
 
     private static final Logger logger = Logger.getLogger(PlayerServiceImpl.class.getName());
 
-    public final static int STARTING_DEPTH_POSITION_NUM = 1;
-    public final static int STARTER_PITCHER_DEPTH_POSITION_NUM = 5;
-    public final static String STARTER_PITCHER = "SP";
-    public final static int CLOSER_DEPTH_POSITION_NUM = 2;
-    public final static String CLOSER = "CL";
-
-    final static String OUTFIELD = "OF";
+    public final int STARTING_DEPTH_POSITION_NUM = 1;
+    public final int STARTER_PITCHER_DEPTH_POSITION_NUM = 5;
+    public final String STARTER_PITCHER = "SP";
+    public final int CLOSER_DEPTH_POSITION_NUM = 2;
+    public final String CLOSER = "CL";
+    final String OUTFIELD = "OF";
 
     @Autowired
     private TeamCrossWalkRepository teamCrossWalkRepository;
@@ -166,8 +165,6 @@ public class PlayerServiceImpl implements PlayerService {
 
         PlayerTrie playerStageTrie = buildPlayerTrie(playerStageIterable);
 
-        List<Player> players = new ArrayList<>();
-
         while (playerRankIterable.hasNext()) {
 
             PlayerRank playerRank = playerRankIterable.next();
@@ -197,14 +194,45 @@ public class PlayerServiceImpl implements PlayerService {
             player.setLookupFirstName(playerStage.getLookupFirstName());
             player.setLookupLastName(playerStage.getLookupLastName());
 
-            players.add(player);
             playerStage.setProcessed(true);
             playerRank.setProcessed(true);
 
+            playerRepository.save(player);
+
         }
 
-        playerRepository.save(players);
+        processUnmatchedStagePlayers(playerStageIterable);
 
+    }
+
+    @Transactional
+    public void processUnmatchedStagePlayers(Iterable<PlayerStage> playerStageIterable) {
+
+        StreamSupport.stream(playerStageIterable.spliterator(), true)
+                .filter(playerStage -> !playerStage.isProcessed())
+                .forEach(playerStage -> {
+
+                    logger.info(playerStage.getFirstName() + " " + playerStage.getLastName() + " UNABLE TO FIND MATCH Depth Chart Service. playing for " +
+                            playerStage.getTeam() + " with jersey " + playerStage.getJersey() + ". Adding in post process step");
+
+                    Player player = new Player();
+
+                    player.setId(playerStage.getId());
+                    player.setFirstName(playerStage.getFirstName());
+                    player.setLastName(playerStage.getLastName());
+                    player.setTeam(playerStage.getTeam());
+                    player.setPosition(playerStage.getPosition());
+                    player.setDepth(playerStage.getDepth());
+                    player.setStatus(playerStage.getStatus());
+                    player.setRank(0);
+                    player.setLookupFirstName(playerStage.getLookupFirstName());
+                    player.setLookupLastName(playerStage.getLookupLastName());
+
+                    playerRepository.save(player);
+
+                    playerStage.setProcessed(true);
+
+                });
     }
 
     @Transactional(readOnly = true)
