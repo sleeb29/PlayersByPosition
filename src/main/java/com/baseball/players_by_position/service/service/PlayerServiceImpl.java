@@ -50,15 +50,6 @@ public class PlayerServiceImpl implements PlayerService {
         teamCrossWalkRepository.save(teamCrossWalkList);
     }
 
-    private String getCommonTeamName(String sourceTeam, Map<String, String> sourceToTargetMap) {
-
-        if (sourceToTargetMap.containsKey(sourceTeam)) {
-            return sourceToTargetMap.get(sourceTeam);
-        }
-
-        return sourceTeam;
-    }
-
     @Transactional
     public void populatePlayerStagingTable(List<PlayerStage> playerStageList) {
 
@@ -279,6 +270,15 @@ public class PlayerServiceImpl implements PlayerService {
 
         return playerTrie;
 
+    }
+
+    private String getCommonTeamName(String sourceTeam, Map<String, String> sourceToTargetMap) {
+
+        if (sourceToTargetMap.containsKey(sourceTeam)) {
+            return sourceToTargetMap.get(sourceTeam);
+        }
+
+        return sourceTeam;
     }
 
     private String normalize(String stringToNormalize) {
