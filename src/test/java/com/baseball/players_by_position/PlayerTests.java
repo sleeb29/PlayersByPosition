@@ -79,7 +79,7 @@ public class PlayerTests {
     }
 
     @Test
-    public void testGettingCloseringPitchers() {
+    public void testGettingClosingPitchers() {
 
         for (int i = 1; i <= PlayerServiceImpl.CLOSER_DEPTH_POSITION_NUM + 1; i++) {
 
