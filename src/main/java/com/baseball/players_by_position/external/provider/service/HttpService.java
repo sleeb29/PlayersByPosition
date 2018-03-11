@@ -55,8 +55,6 @@ public class HttpService {
             updatedUri = uri.replace(httpServiceParams.getExternalApiKeyPropertyName(), externalAPIKeyPropertyValue);
         }
 
-        logger.info("updatedUri:" + updatedUri);
-
         ResponseEntity<String> httpResponse = restTemplate.exchange(updatedUri, httpMethod, request, String.class, params);
         return httpResponse;
 

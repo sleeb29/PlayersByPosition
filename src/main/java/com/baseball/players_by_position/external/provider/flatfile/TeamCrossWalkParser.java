@@ -15,8 +15,16 @@ import java.util.stream.Stream;
 @Service
 public class TeamCrossWalkParser {
 
+
     @Value("${team_crosswalk.file_path}")
     String teamCrossWalkFilePath;
+    @Value("${team_crosswalk_file_delimiter}")
+    String fileDelimiter;
+
+    @Value("${team_crosswalk.lines_to_skip}")
+    int linesToSkip;
+    @Value("${team_crosswalk_file_num_of_columns}")
+    int numOfColumns;
 
     public List<TeamCrossWalk> getTeamCrossWalkList() throws IOException {
 
@@ -24,13 +32,22 @@ public class TeamCrossWalkParser {
         Path file = new File(classLoader.getResource(teamCrossWalkFilePath).getFile()).toPath();
         Stream<String> lines = Files.lines(file);
         List<TeamCrossWalk> teamCrossWalkList = lines
-                .skip(1)
-                .map((line) -> line.split(","))
-                .filter(record -> record.length == 3)
-                .map(record -> new TeamCrossWalk(record[0].replace(" ", ""), record[1].replace(" ", ""), record[2].replace(" ", "")))
+                .skip(linesToSkip)
+                .map((line) -> line.split(fileDelimiter))
+                .filter(record -> record.length == numOfColumns)
+                .map(record ->
+                        new TeamCrossWalk(replaceWhiteSpace(record[0]),
+                                replaceWhiteSpace(record[1]),
+                                replaceWhiteSpace(record[2])))
                 .collect(Collectors.toList());
 
         return teamCrossWalkList;
+
+    }
+
+    private String replaceWhiteSpace(String source) {
+
+        return source.replace(" ", "");
 
     }
 
