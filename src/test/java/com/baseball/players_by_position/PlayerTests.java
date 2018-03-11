@@ -3,6 +3,7 @@ package com.baseball.players_by_position;
 import com.baseball.players_by_position.configuration.custom.PlayerServiceCustomMappingConfig;
 import com.baseball.players_by_position.model.Player;
 import com.baseball.players_by_position.service.repository.PlayerRepository;
+import com.baseball.players_by_position.service.service.PlayerService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,13 +22,16 @@ public class PlayerTests {
     static int playerIDCounter = 0;
 
     final String DUMMY_POSITION = "POSITION";
-    final String startingPitcherString = "SP";
+    final String STARTING_PITCHER_STRING = "SP";
 
     @Autowired
     private PlayerServiceCustomMappingConfig playerServiceCustomMappingConfig;
 
     @Autowired
     private PlayerRepository playerRepository;
+
+    @Autowired
+    private PlayerService playerService;
 
     @Test
     public void testAddingOnePlayer() {
@@ -55,7 +60,9 @@ public class PlayerTests {
         nonStarter.setPosition(DUMMY_POSITION);
         addPlayerToRepository(nonStarter);
 
-        List<Player> starters = playerRepository.getAllStarters(playerServiceCustomMappingConfig.getStarterDepthLevel());
+        HashMap<String, List<Player>> positionToStartingPlayersMap = playerService.getPositionToStartingPlayersMap();
+        List<Player> starters = positionToStartingPlayersMap.get(DUMMY_POSITION);
+
         deletePlayersFromRepository();
 
         Assert.assertEquals(playerServiceCustomMappingConfig.getStarterDepthLevel(), starters.size());
@@ -67,19 +74,20 @@ public class PlayerTests {
     public void testGettingStartingPitchers() {
 
         Map<String, Integer> positionToCustomDepthLevelMap = playerServiceCustomMappingConfig.getPositionToCustomDepthLevelMap();
-        int startingPitcherDepthNum = positionToCustomDepthLevelMap.get(startingPitcherString);
+        int startingPitcherDepthNum = positionToCustomDepthLevelMap.get(STARTING_PITCHER_STRING);
 
         for (int i = 1; i <= startingPitcherDepthNum + 1; i++) {
 
             Player startingPitcher = getDummyPlayer();
             startingPitcher.setDepth(startingPitcherDepthNum);
-            startingPitcher.setPosition(startingPitcherString);
+            startingPitcher.setPosition(STARTING_PITCHER_STRING);
             startingPitcher.setDepth(i);
             addPlayerToRepository(startingPitcher);
 
         }
 
-        List<Player> starters = playerRepository.getAllStarters(startingPitcherDepthNum);
+        HashMap<String, List<Player>> positionToStartingPlayersMap = playerService.getPositionToStartingPlayersMap();
+        List<Player> starters = positionToStartingPlayersMap.get(STARTING_PITCHER_STRING);
         deletePlayersFromRepository();
 
         Assert.assertEquals(startingPitcherDepthNum, starters.size());

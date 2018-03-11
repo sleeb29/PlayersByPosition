@@ -227,20 +227,26 @@ public class PlayerServiceImpl implements PlayerService {
     public HashMap<String, List<Player>> getPositionToStartingPlayersMap() {
 
         Map<String, Integer> positionToCustomDepthLevelMap = playerServiceCustomMappingConfig.getPositionToCustomDepthLevelMap();
-        Player[] starters = (Player[]) StreamSupport.stream(playerRepository.findAll().spliterator(), true)
-                .filter(player ->
-                        !positionToCustomDepthLevelMap.containsKey(player.getPosition()) ||
-                                player.getDepth() <= positionToCustomDepthLevelMap.get(player.getPosition()))
-                .toArray();
+        Iterator<Player> players = playerRepository.findAll().iterator();
 
         Map<String, String> positionsToAggregateMap = playerServiceCustomMappingConfig.getPositionsToAggregateMap();
         HashMap<String, List<Player>> positionToStartingPlayersMap = new HashMap<>();
 
-        for (int i = 0; i < starters.length; i++) {
+        while (players.hasNext()) {
 
-            Player starter = starters[i];
+            Player player = players.next();
 
-            String position = starter.getPosition();
+            if (positionToCustomDepthLevelMap.containsKey(player.getPosition()) &&
+                    player.getDepth() > positionToCustomDepthLevelMap.get(player.getPosition())) {
+                continue;
+            }
+
+            if (!positionToCustomDepthLevelMap.containsKey(player.getPosition()) &&
+                    player.getDepth() > playerServiceCustomMappingConfig.getStarterDepthLevel()) {
+                continue;
+            }
+
+            String position = player.getPosition();
 
             if (positionsToAggregateMap.containsKey(position)) {
                 position = positionsToAggregateMap.get(position);
@@ -252,7 +258,7 @@ public class PlayerServiceImpl implements PlayerService {
 
             List playerSetForPosition = positionToStartingPlayersMap.get(position);
 
-            playerSetForPosition.add(starter);
+            playerSetForPosition.add(player);
 
         }
 
