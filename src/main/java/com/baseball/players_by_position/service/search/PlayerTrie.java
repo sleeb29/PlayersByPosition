@@ -25,18 +25,18 @@ public class PlayerTrie {
 
         if (node == null) {
             return null;
-        } else if (!SearchSettings.DepthSettings.hasValue(depth)) {
+        } else if (!SearchLookup.DepthLookup.hasValue(depth)) {
             return node;
         }
 
-        SearchSettings.DepthSettings level = SearchSettings.DepthSettings.valueOf(depth);
-        if (!node.children.containsKey(level.getString(player)) && !level.equals(SearchSettings.DepthSettings.FIRST_NAME)) {
+        SearchLookup.DepthLookup level = SearchLookup.DepthLookup.valueOf(depth);
+        if (!node.children.containsKey(level.getLookupStringBasedOnDepth(player)) && !level.equals(SearchLookup.DepthLookup.FIRST_NAME)) {
             return null;
-        } else if (!node.children.containsKey(level.getString(player))) {
+        } else if (!node.children.containsKey(level.getLookupStringBasedOnDepth(player))) {
             return tryToFindSecondaryPlayerMatch(node, player);
         }
 
-        return get(node.children.get(level.getString(player)), player, depth + 1);
+        return get(node.children.get(level.getLookupStringBasedOnDepth(player)), player, depth + 1);
 
     }
 
@@ -78,13 +78,13 @@ public class PlayerTrie {
             node = new TrieNode();
         }
 
-        if (!SearchSettings.DepthSettings.hasValue(depth)) {
+        if (!SearchLookup.DepthLookup.hasValue(depth)) {
             node.setPlayer(player);
             return node;
         }
 
-        SearchSettings.DepthSettings level = SearchSettings.DepthSettings.valueOf(depth);
-        String stringToPut = level.getString(player);
+        SearchLookup.DepthLookup level = SearchLookup.DepthLookup.valueOf(depth);
+        String stringToPut = level.getLookupStringBasedOnDepth(player);
 
         TrieNode trieNode;
         if (!node.children.containsKey(stringToPut)) {

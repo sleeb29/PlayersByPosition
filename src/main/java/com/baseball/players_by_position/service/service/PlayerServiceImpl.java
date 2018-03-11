@@ -1,5 +1,6 @@
 package com.baseball.players_by_position.service.service;
 
+import com.baseball.players_by_position.configuration.custom.PlayerServiceCustomMappingConfig;
 import com.baseball.players_by_position.model.*;
 import com.baseball.players_by_position.service.repository.*;
 import com.baseball.players_by_position.service.search.PlayerTrie;
@@ -19,13 +20,8 @@ public class PlayerServiceImpl implements PlayerService {
 
     private static final Logger logger = Logger.getLogger(PlayerServiceImpl.class.getName());
 
-    static public final int STARTING_DEPTH_POSITION_NUM = 1;
-    static public final int STARTER_PITCHER_DEPTH_POSITION_NUM = 5;
-    static public final String STARTER_PITCHER = "SP";
-    static public final int CLOSER_DEPTH_POSITION_NUM = 2;
-    static public final String CLOSER = "CL";
-
-    final String OUTFIELD = "OF";
+    @Autowired
+    private PlayerServiceCustomMappingConfig playerServiceCustomMappingConfig;
 
     @Autowired
     private TeamCrossWalkRepository teamCrossWalkRepository;
@@ -230,17 +226,21 @@ public class PlayerServiceImpl implements PlayerService {
     @Transactional(readOnly = true)
     public HashMap<String, List<Player>> getPositionToStartingPlayersMap() {
 
-        HashMap<String, String> positionsToAggregateMap = new HashMap<>();
-        positionsToAggregateMap.put(POSITIONS_TO_AGGREGATE.CF.name(), OUTFIELD);
-        positionsToAggregateMap.put(POSITIONS_TO_AGGREGATE.LF.name(), OUTFIELD);
-        positionsToAggregateMap.put(POSITIONS_TO_AGGREGATE.RF.name(), OUTFIELD);
+        Map<String, Integer> positionToCustomDepthLevelMap = playerServiceCustomMappingConfig.getPositionToCustomDepthLevelMap();
+        Player[] starters = (Player[]) StreamSupport.stream(playerRepository.findAll().spliterator(), true)
+                .filter(player ->
+                        !positionToCustomDepthLevelMap.containsKey(player.getPosition()) ||
+                                player.getDepth() <= positionToCustomDepthLevelMap.get(player.getPosition()))
+                .toArray();
 
-        List<Player> players = playerRepository.getAllStarters(STARTING_DEPTH_POSITION_NUM);
+        Map<String, String> positionsToAggregateMap = playerServiceCustomMappingConfig.getPositionsToAggregateMap();
         HashMap<String, List<Player>> positionToStartingPlayersMap = new HashMap<>();
 
-        for (Player player : players) {
+        for (int i = 0; i < starters.length; i++) {
 
-            String position = player.getPosition();
+            Player starter = starters[i];
+
+            String position = starter.getPosition();
 
             if (positionsToAggregateMap.containsKey(position)) {
                 position = positionsToAggregateMap.get(position);
@@ -252,7 +252,7 @@ public class PlayerServiceImpl implements PlayerService {
 
             List playerSetForPosition = positionToStartingPlayersMap.get(position);
 
-            playerSetForPosition.add(player);
+            playerSetForPosition.add(starter);
 
         }
 
@@ -294,12 +294,6 @@ public class PlayerServiceImpl implements PlayerService {
 
         return stringBuilder.toString();
 
-    }
-
-    enum POSITIONS_TO_AGGREGATE {
-        LF,
-        RF,
-        CF
     }
 
 }

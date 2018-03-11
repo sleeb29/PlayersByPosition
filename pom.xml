@@ -184,8 +184,17 @@
             <artifactId>spring-batch-core</artifactId>
             <version>3.0.8.RELEASE</version>
         </dependency>
-
-    </dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-configuration-processor</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>commons-configuration</groupId>
+			<artifactId>commons-configuration</artifactId>
+			<version>1.6</version>
+		</dependency>
+	</dependencies>
 
 	<build>
 		<plugins>

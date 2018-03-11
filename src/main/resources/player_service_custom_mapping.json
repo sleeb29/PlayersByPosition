@@ -1,0 +1,26 @@
+{
+  "starterDepthLevel": 1,
+  "aggregatePositions": [
+    {
+      "position": "OF",
+      "positionsToAggregate": [
+        "CF",
+        "LF",
+        "RF"
+      ]
+    },
+    {
+      "position": "CL",
+      "positionsToAggregate": [
+        "CL",
+        "BP"
+      ]
+    }
+  ],
+  "customStarterDepthLevelPositions": [
+    {
+      "position": "SP",
+      "depth": 5
+    }
+  ]
+}

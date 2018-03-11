@@ -5,9 +5,9 @@ import com.baseball.players_by_position.model.AbstractPlayer;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SearchSettings {
+public class SearchLookup {
 
-    public enum DepthSettings {
+    public enum DepthLookup {
 
         TEAM(0),
         LAST_NAME(1),
@@ -16,16 +16,22 @@ public class SearchSettings {
         private static Map map = new HashMap<>();
 
         static {
-            for (DepthSettings depthSettings : DepthSettings.values()) {
-                map.put(depthSettings.value, depthSettings);
+            for (DepthLookup depthLookup : DepthLookup.values()) {
+                map.put(depthLookup.value, depthLookup);
             }
         }
 
+        DepthLookup(int value) {
+            this.value = value;
+        }
+
+        private int value;
+
         static Boolean hasValue(int depthSetting) {
 
-            for (int i = 0; i < DepthSettings.values().length; i++) {
+            for (int i = 0; i < DepthLookup.values().length; i++) {
 
-                if (DepthSettings.values()[i].getValue() == depthSetting) {
+                if (DepthLookup.values()[i].getValue() == depthSetting) {
                     return true;
                 }
 
@@ -34,21 +40,15 @@ public class SearchSettings {
             return false;
         }
 
-        private int value;
-
-        DepthSettings(int value) {
-            this.value = value;
-        }
-
-        public static DepthSettings valueOf(int depthSetting) {
-            return (DepthSettings) map.get(depthSetting);
+        public static DepthLookup valueOf(int depthLookup) {
+            return (DepthLookup) map.get(depthLookup);
         }
 
         public int getValue() {
             return value;
         }
 
-        public String getString(AbstractPlayer player) {
+        public String getLookupStringBasedOnDepth(AbstractPlayer player) {
 
             if (this.value == TEAM.value) {
                 return player.getTeam();

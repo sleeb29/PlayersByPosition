@@ -1,8 +1,8 @@
 package com.baseball.players_by_position;
 
+import com.baseball.players_by_position.configuration.custom.PlayerServiceCustomMappingConfig;
 import com.baseball.players_by_position.model.Player;
 import com.baseball.players_by_position.service.repository.PlayerRepository;
-import com.baseball.players_by_position.service.service.PlayerServiceImpl;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,13 +11,19 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
+import java.util.Map;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class PlayerTests {
 
-    static String DUMMY_POSITION = "POSITION";
     static int playerIDCounter = 0;
+
+    final String DUMMY_POSITION = "POSITION";
+    final String startingPitcherString = "SP";
+
+    @Autowired
+    private PlayerServiceCustomMappingConfig playerServiceCustomMappingConfig;
 
     @Autowired
     private PlayerRepository playerRepository;
@@ -40,19 +46,19 @@ public class PlayerTests {
     public void testGettingOnlyStarters() {
 
         Player starter = getDummyPlayer();
-        starter.setDepth(PlayerServiceImpl.STARTING_DEPTH_POSITION_NUM);
+        starter.setDepth(playerServiceCustomMappingConfig.getStarterDepthLevel());
         starter.setPosition(DUMMY_POSITION);
         addPlayerToRepository(starter);
 
         Player nonStarter = getDummyPlayer();
-        nonStarter.setDepth(PlayerServiceImpl.STARTING_DEPTH_POSITION_NUM + 1);
+        nonStarter.setDepth(playerServiceCustomMappingConfig.getStarterDepthLevel() + 1);
         nonStarter.setPosition(DUMMY_POSITION);
         addPlayerToRepository(nonStarter);
 
-        List<Player> starters = playerRepository.getAllStarters(PlayerServiceImpl.STARTING_DEPTH_POSITION_NUM);
+        List<Player> starters = playerRepository.getAllStarters(playerServiceCustomMappingConfig.getStarterDepthLevel());
         deletePlayersFromRepository();
 
-        Assert.assertEquals(PlayerServiceImpl.STARTING_DEPTH_POSITION_NUM, starters.size());
+        Assert.assertEquals(playerServiceCustomMappingConfig.getStarterDepthLevel(), starters.size());
         Assert.assertEquals(0, getPlayerRepositorySize());
 
     }
@@ -60,41 +66,23 @@ public class PlayerTests {
     @Test
     public void testGettingStartingPitchers() {
 
-        for (int i = 1; i <= PlayerServiceImpl.STARTER_PITCHER_DEPTH_POSITION_NUM + 1; i++) {
+        Map<String, Integer> positionToCustomDepthLevelMap = playerServiceCustomMappingConfig.getPositionToCustomDepthLevelMap();
+        int startingPitcherDepthNum = positionToCustomDepthLevelMap.get(startingPitcherString);
+
+        for (int i = 1; i <= startingPitcherDepthNum + 1; i++) {
 
             Player startingPitcher = getDummyPlayer();
-            startingPitcher.setDepth(PlayerServiceImpl.STARTER_PITCHER_DEPTH_POSITION_NUM);
-            startingPitcher.setPosition(PlayerServiceImpl.STARTER_PITCHER);
+            startingPitcher.setDepth(startingPitcherDepthNum);
+            startingPitcher.setPosition(startingPitcherString);
             startingPitcher.setDepth(i);
             addPlayerToRepository(startingPitcher);
 
         }
 
-        List<Player> starters = playerRepository.getAllStarters(PlayerServiceImpl.STARTING_DEPTH_POSITION_NUM);
+        List<Player> starters = playerRepository.getAllStarters(startingPitcherDepthNum);
         deletePlayersFromRepository();
 
-        Assert.assertEquals(PlayerServiceImpl.STARTER_PITCHER_DEPTH_POSITION_NUM, starters.size());
-        Assert.assertEquals(0, getPlayerRepositorySize());
-
-    }
-
-    @Test
-    public void testGettingClosingPitchers() {
-
-        for (int i = 1; i <= PlayerServiceImpl.CLOSER_DEPTH_POSITION_NUM + 1; i++) {
-
-            Player closer = getDummyPlayer();
-            closer.setDepth(PlayerServiceImpl.CLOSER_DEPTH_POSITION_NUM);
-            closer.setPosition(PlayerServiceImpl.CLOSER);
-            closer.setDepth(i);
-            addPlayerToRepository(closer);
-
-        }
-
-        List<Player> startingClosers = playerRepository.getAllStarters(PlayerServiceImpl.CLOSER_DEPTH_POSITION_NUM);
-        deletePlayersFromRepository();
-
-        Assert.assertEquals(PlayerServiceImpl.CLOSER_DEPTH_POSITION_NUM, startingClosers.size());
+        Assert.assertEquals(startingPitcherDepthNum, starters.size());
         Assert.assertEquals(0, getPlayerRepositorySize());
 
     }
@@ -109,7 +97,7 @@ public class PlayerTests {
         player.setRank(1);
         player.setStatus("MIN");
         player.setTeam("TEAM");
-        player.setDepth(PlayerServiceImpl.STARTING_DEPTH_POSITION_NUM);
+        player.setDepth(playerServiceCustomMappingConfig.getStarterDepthLevel());
         player.setLookupFirstName(player.getFirstName());
         player.setLookupLastName(player.getLastName());
 

@@ -22,7 +22,8 @@ import java.util.logging.Logger;
 		"com.baseball.players_by_position.external.provider.service",
 		"com.baseball.players_by_position.configuration.web",
 		"com.baseball.players_by_position.external.provider.flatfile",
-        "com.baseball.players_by_position.external.provider.deserialize"})
+        "com.baseball.players_by_position.external.provider.deserialize",
+        "com.baseball.players_by_position.configuration.custom"})
 @EnableJpaRepositories("com.baseball.players_by_position.service.repository")
 @EnableAsync
 @PersistenceContext
