@@ -1,4 +1,4 @@
-# PlayersByPosition
+# StartingPlayersByPosition
 Web API to retrieve starting baseball players split by position in an Excel Worksheet
 
 The players are ranked in the Worksheet based on the Ranking Data obtained from [Fantasy Baseball Rankings](https://fantasybaseballnerd.com). The Depth Chart data is from [Sports Radar API](https://developer.sportradar.com)
