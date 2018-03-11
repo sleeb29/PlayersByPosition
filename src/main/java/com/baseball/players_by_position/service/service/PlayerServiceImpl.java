@@ -240,26 +240,28 @@ public class PlayerServiceImpl implements PlayerService {
                     player.getDepth() > positionToCustomDepthLevelMap.get(player.getPosition())) {
                 continue;
             }
-
             if (!positionToCustomDepthLevelMap.containsKey(player.getPosition()) &&
                     player.getDepth() > playerServiceCustomMappingConfig.getStarterDepthLevel()) {
                 continue;
             }
 
             String position = player.getPosition();
-
             if (positionsToAggregateMap.containsKey(position)) {
                 position = positionsToAggregateMap.get(position);
             }
-
             if (!positionToStartingPlayersMap.containsKey(position)) {
                 positionToStartingPlayersMap.put(position, new ArrayList<>());
             }
 
             List playerSetForPosition = positionToStartingPlayersMap.get(position);
-
             playerSetForPosition.add(player);
 
+        }
+
+        for (Map.Entry<String, List<Player>> entry : positionToStartingPlayersMap.entrySet()) {
+            List<Player> starters = entry.getValue();
+            CustomPlayerRankComparator comparator = new CustomPlayerRankComparator();
+            starters.sort(comparator);
         }
 
         return positionToStartingPlayersMap;
@@ -301,5 +303,24 @@ public class PlayerServiceImpl implements PlayerService {
         return stringBuilder.toString();
 
     }
+
+    class CustomPlayerRankComparator implements Comparator<Player> {
+        public int compare(Player playerOne, Player playerTwo) {
+
+            int playerOneRank = playerOne.getRank();
+            int playerTwoRank = playerTwo.getRank();
+
+            Boolean playerOneRankGreater = playerOneRank > playerTwoRank && playerTwoRank != 0;
+
+            if (playerOneRank == playerTwoRank) {
+                return 0;
+            } else if (playerOneRankGreater || playerOneRank == 0) {
+                return 1;
+            } else {
+                return -1;
+            }
+        }
+    }
+
 
 }
