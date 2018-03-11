@@ -11,9 +11,9 @@ Uses: Spring Boot
 - Transforms responses from JSON/XML Payloads
 - Writes POJO's to staging tables for both services
 - Creates actual Player table off of staging table data by using a Trie data structure to search in the following hierarchy:
-   TEAM -> LAST_NAME -> FIRST_NAME (IF NO MATCH ON FIRST_NAME, 
+   TEAM -> LAST_NAME -> FIRST_NAME (IF no match on FIRST_NAME, 
                                     THEN JERSEY_NUMBER
-                                    IF NO MATCH ON JERSEY_NUMBER
+                                    IF no match on JERSEY_NUMBER
                                     THEN POSITION)
    The first/last names are converted and stored in an ASCII format for the backend matching and displayed
    in the front end format to the user (as the Depth Chart service sent the names) in the worksheet.           
