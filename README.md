@@ -5,10 +5,10 @@ The players are ranked in the Worksheet based on the Ranking Data obtained from 
 
 Uses: Spring Boot
 
--Client initiates GET request to PlayersByPosition
--Calls External APIs to retrieve player information:
+- Client initiates GET request to PlayersByPosition
+- Calls External APIs to retrieve player information:
   One API has League Depth Chart Info, One Player Ranking Info
--Transforms responses from JSON/XML Payloads
+- Transforms responses from JSON/XML Payloads
 - Writes POJO's to staging tables for both services
 - Creates actual Player table off of staging table data by using a Trie data structure to search in the following hierarchy:
    TEAM -> LAST_NAME -> FIRST_NAME (IF NO MATCH ON FIRST_NAME, 
